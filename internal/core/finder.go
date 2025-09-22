@@ -6,26 +6,26 @@ import (
 	"path/filepath"
 )
 
-const ConfigFileName = ".simplyenv"
+// A prioritized list of config filenames to search for.
+var configFileNames = []string{".simplyenv", ".envrc"}
 
-// FindConfig searches for the .simplyenv file, starting from startDir and moving upwards.
+// FindConfig searches for a config file, starting from startDir and moving upwards.
 // It returns the full path to the file if found, or an error if not.
 func FindConfig(startDir string) (string, error) {
 	dir := startDir
 	for {
-		// Construct the full path for the config file in the current directory
-		configPath := filepath.Join(dir, ConfigFileName)
-
-		// Check if the file exists
-		if _, err := os.Stat(configPath); err == nil {
-			return configPath, nil // Found it!
+		// Check for each config file name in our prioritized list
+		for _, fileName := range configFileNames {
+			configPath := filepath.Join(dir, fileName)
+			if _, err := os.Stat(configPath); err == nil {
+				return configPath, nil // Found the highest priority file
+			}
 		}
 
 		// Move up to the parent directory
 		parentDir := filepath.Dir(dir)
-
-		// If the parent directory is the same as the current one, we've hit the root
 		if parentDir == dir {
+			// We've hit the root directory without finding any config file
 			return "", errors.New("config file not found")
 		}
 		dir = parentDir

@@ -1,0 +1,2 @@
+echo 'API_KEY="123-abc"' > test_project/.simplyenv
+echo 'DATABASE_URL="dev.db"' >> test_project/.simplyenv
