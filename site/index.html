@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>simplyenv — The Developer's Environment Manager & Modern direnv Alternative</title>
+  <meta name="description" content="Automate project environment variables without the headaches. simplyenv combines automatic shell directory switching with a modern graphical UI, secret masking, and 1-click shell integration.">
+  <link rel="canonical" href="https://simplyenv.web.app">
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://simplyenv.web.app">
+  <meta property="og:title" content="simplyenv — The Developer's Environment Manager">
+  <meta property="og:description" content="The modern, visual alternative to direnv with automatic shell switching, secret masking, and bulk import/export.">
+  <meta property="og:image" content="/assets/simplyenv-logo.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
+
+  <!-- Fonts & Styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+
+  <script>
+    (function() {
+      const theme = localStorage.getItem('simplyenv_site_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+  <!-- Header Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand">
+        <img src="/assets/logo-icon.png" alt="simplyenv logo" class="brand-logo">
+        <span class="brand-name">simplyenv</span>
+        <span class="version-badge">v1.0</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#comparison">Why simplyenv</a>
+        <a href="#docs">Documentation</a>
+        <a href="#community">Community</a>
+        <a href="https://github.com/codesbysagar/simplyenv" target="_blank" rel="noopener" class="nav-link-github">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="themeToggleBtn" class="theme-btn" title="Toggle Light / Dark Mode">
+          <svg id="themeMoonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg id="themeSunIcon" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+        <a href="#docs" class="btn btn-primary">Get Started</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        <span>Open Source · Free & MIT Licensed</span>
+      </div>
+
+      <h1 class="hero-title">
+        Directory Environments,<br>
+        <span class="highlight-text">Simplified for Developers.</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        The user-friendly alternative to direnv. Automatically switch environment variables as you <code>cd</code> through projects, inspect secrets in a sleek graphical UI, and install shell hooks with a single click.
+      </p>
+
+      <!-- Terminal Install Snippet -->
+      <div class="hero-install-card">
+        <div class="install-tabs">
+          <button class="install-tab active" data-tab="go">Go Install</button>
+          <button class="install-tab" data-tab="git">Build from Source</button>
+        </div>
+        <div class="install-code-box">
+          <code id="installCommandText">go install github.com/codesbysagar/simplyenv/cmd/simplyenv@latest</code>
+          <button id="copyInstallBtn" class="copy-btn" title="Copy Command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span class="copy-label">Copy</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-cta-group">
+        <a href="#docs" class="btn btn-primary btn-lg">Quick Start Guide</a>
+        <a href="https://github.com/codesbysagar/simplyenv" target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>Star on GitHub</span>
+        </a>
+      </div>
+
+      <!-- Live Interactive Showcase -->
+      <div class="hero-preview-frame">
+        <div class="frame-header">
+          <div class="frame-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="frame-title">simplyenv Dashboard — UI & Terminal in Sync</div>
+          <div class="frame-switcher">
+            <button id="showcaseLightBtn" class="showcase-tab active">Light Mode</button>
+            <button id="showcaseDarkBtn" class="showcase-tab">Dark Mode</button>
+          </div>
+        </div>
+        <div class="frame-content">
+          <img id="showcaseImg" src="/assets/dashboard_light_mode_1789106014791.png" alt="simplyenv UI Dashboard Mockup" class="showcase-img">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Section -->
+  <section id="comparison" class="section comparison-section">
+    <div class="container">
+      <div class="section-heading">
+        <span class="pill-badge">COMPARISON</span>
+        <h2>Why simplyenv vs direnv?</h2>
+        <p>direnv was groundbreaking, but its CLI-only nature, manual dotfile configuration, and lack of visual tooling cause friction. simplyenv retains full direnv compatibility while fixing developer pain points.</p>
+      </div>
+
+      <div class="comparison-table-wrapper">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th style="width: 44%;">FEATURE</th>
+              <th style="width: 28%;" class="col-simplyenv">
+                <div class="table-brand">
+                  <img src="/assets/logo-icon.png" width="20" height="20" alt="logo">
+                  <span>simplyenv</span>
+                </div>
+              </th>
+              <th style="width: 28%;">direnv</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Automatic Shell Directory Switching</strong></td>
+              <td class="col-simplyenv"><span class="check-icon">✓</span> Built-in (Diff engine)</td>
+              <td><span class="check-icon">✓</span> Built-in</td>
+            </tr>
+            <tr>
+              <td><strong>Graphical UI Dashboard</strong></td>
+              <td class="col-simplyenv"><span class="check-icon">✓</span> <strong>Yes (simplyenv ui)</strong></td>
+              <td><span class="cross-icon">✗</span> None (CLI only)</td>
+            </tr>
+            <tr>
+              <td><strong>1-Click Automated Shell Hook Setup</strong></td>
+              <td class="col-simplyenv"><span class="check-icon">✓</span> <strong>Yes (1-click / 1-command)</strong></td>
+              <td><span class="cross-icon">✗</span> Manual copy-paste in dotfiles</td>
+            </tr>
+            <tr>
+              <td><strong>Mask & Reveal Sensitive Secrets</strong></td>
+              <td class="col-simplyenv"><span class="check-icon">✓</span> <strong>Yes (Live toggle)</strong></td>
+              <td><span class="cross-icon">✗</span> No (Plaintext files)</td>
+            </tr>
+            <tr>
+              <td><strong>Multi-Format Bulk Import & Export</strong></td>
+              <td class="col-simplyenv"><span class="check-icon">✓</span> <strong>.env, JSON, Shell, Docker</strong></td>
+              <td><span class="cross-icon">✗</span> No bulk formats</td>
+            </tr>
+            <tr>
+              <td><strong>Central Project Directory Catalog</strong></td>
+              <td class="col-simplyenv"><span class="check-icon">✓</span> <strong>Yes (~/.config/simplyenv)</strong></td>
+              <td><span class="cross-icon">✗</span> Must cd into folders</td>
+            </tr>
+            <tr>
+              <td><strong>Single Standalone Binary</strong></td>
+              <td class="col-simplyenv"><span class="check-icon">✓</span> 100% Pure Go (~9MB)</td>
+              <td><span class="check-icon">✓</span> Go binary</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Grid Section -->
+  <section id="features" class="section features-section">
+    <div class="container">
+      <div class="section-heading">
+        <span class="pill-badge">CORE FEATURES</span>
+        <h2>Built for Modern Developer Workflows</h2>
+        <p>Everything you need to manage local configurations, keep team secrets secure, and streamline shell automation.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon icon-emerald">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </div>
+          <h3>Modern Minimalist UI</h3>
+          <p>Inspect, filter, add, and edit variables with a clean matte dashboard. Comes with both Light Mode and Dark Mode out of the box.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon icon-indigo">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <h3>1-Click Shell Hook Setup</h3>
+          <p>No more digging through <code>~/.bashrc</code> or <code>~/.zshrc</code>. Run <code>simplyenv install-hook</code> or click one button in the UI to configure your shell.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon icon-cyan">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <h3>Secret Masking & Security</h3>
+          <p>Sensitive tokens, API keys, and credentials are masked by default to protect you during screen shares, paired programming, and live streams.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon icon-amber">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <h3>Multi-Format Bulk Import/Export</h3>
+          <p>Drag and drop <code>.env</code> or JSON files. Export variables directly into Dockerfile <code>ENV</code>, POSIX Shell <code>export</code>, or JSON formats.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon icon-purple">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <h3>Central Directory Catalog</h3>
+          <p>Manage all your local project directories from a unified sidebar. View active environments without navigating to them in your terminal.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon icon-rose">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <h3>Full-Featured CLI</h3>
+          <p>Prefer the keyboard? Manage everything from terminal with <code>simplyenv set</code>, <code>simplyenv list</code>, <code>simplyenv import</code>, and <code>simplyenv export</code>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Documentation & Quick Reference -->
+  <section id="docs" class="section docs-section">
+    <div class="container">
+      <div class="section-heading">
+        <span class="pill-badge">GETTING STARTED</span>
+        <h2>Quick Start & Documentation</h2>
+        <p>Get up and running with simplyenv in less than two minutes.</p>
+      </div>
+
+      <div class="docs-grid">
+        <!-- Step 1 -->
+        <div class="docs-card">
+          <div class="docs-card-header">
+            <span class="step-num">1</span>
+            <h3>Install simplyenv</h3>
+          </div>
+          <p>Install via the Go toolchain or download pre-compiled releases:</p>
+          <div class="code-block">
+            <pre><code>go install github.com/codesbysagar/simplyenv/cmd/simplyenv@latest</code></pre>
+          </div>
+          <p class="docs-subtext">Or clone and build locally:</p>
+          <div class="code-block">
+            <pre><code>git clone https://github.com/codesbysagar/simplyenv.git
+cd simplyenv && go build -o simplyenv cmd/simplyenv/main.go</code></pre>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="docs-card">
+          <div class="docs-card-header">
+            <span class="step-num">2</span>
+            <h3>Configure Shell Integration</h3>
+          </div>
+          <p>Run the 1-command installer to automatically configure your shell:</p>
+          <div class="code-block">
+            <pre><code>simplyenv install-hook</code></pre>
+          </div>
+          <p class="docs-subtext">Supports Bash, Zsh, Fish, and PowerShell without manual edits.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="docs-card">
+          <div class="docs-card-header">
+            <span class="step-num">3</span>
+            <h3>Launch the Visual Dashboard</h3>
+          </div>
+          <p>Start the embedded GUI directly from any project directory:</p>
+          <div class="code-block">
+            <pre><code>simplyenv ui</code></pre>
+          </div>
+          <p class="docs-subtext">Automatically opens your browser at <code>http://127.0.0.1:8085</code>.</p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="docs-card">
+          <div class="docs-card-header">
+            <span class="step-num">4</span>
+            <h3>CLI Commands Cheatsheet</h3>
+          </div>
+          <div class="table-container-mini">
+            <table class="cli-table">
+              <tbody>
+                <tr>
+                  <td><code>simplyenv set KEY=VAL</code></td>
+                  <td>Add or update a variable</td>
+                </tr>
+                <tr>
+                  <td><code>simplyenv list</code></td>
+                  <td>Display directory variables in terminal</td>
+                </tr>
+                <tr>
+                  <td><code>simplyenv unset KEY</code></td>
+                  <td>Delete an environment variable</td>
+                </tr>
+                <tr>
+                  <td><code>simplyenv import &lt;file&gt;</code></td>
+                  <td>Bulk import from .env or JSON</td>
+                </tr>
+                <tr>
+                  <td><code>simplyenv export --format json</code></td>
+                  <td>Export to JSON, Docker, or Shell</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community & Issues Section -->
+  <section id="community" class="section community-section">
+    <div class="container">
+      <div class="community-box">
+        <div class="community-content">
+          <span class="pill-badge">OPEN SOURCE</span>
+          <h2>Have Questions, Ideas, or Found a Bug?</h2>
+          <p>simplyenv is actively maintained and completely open-source. Report issues, request new integrations, or contribute directly on GitHub.</p>
+          <div class="community-buttons">
+            <a href="https://github.com/codesbysagar/simplyenv/issues/new" target="_blank" rel="noopener" class="btn btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              <span>Report an Issue</span>
+            </a>
+            <a href="https://github.com/codesbysagar/simplyenv" target="_blank" rel="noopener" class="btn btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              <span>GitHub Repository</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-left">
+        <div class="brand">
+          <img src="/assets/logo-icon.png" alt="simplyenv logo" class="brand-logo">
+          <span class="brand-name">simplyenv</span>
+        </div>
+        <p class="footer-tagline">The developer's environment manager & user-friendly direnv alternative.</p>
+      </div>
+
+      <div class="footer-right">
+        <div class="footer-links">
+          <span>PROJECT</span>
+          <a href="https://github.com/codesbysagar/simplyenv" target="_blank" rel="noopener">Source Code</a>
+          <a href="https://github.com/codesbysagar/simplyenv/releases" target="_blank" rel="noopener">Releases</a>
+          <a href="https://github.com/codesbysagar/simplyenv/issues" target="_blank" rel="noopener">Issue Tracker</a>
+        </div>
+        <div class="footer-links">
+          <span>AUTHOR</span>
+          <a href="https://github.com/codesbysagar" target="_blank" rel="noopener">Sagar Sharma</a>
+          <a href="https://codesbysagar.com" target="_blank" rel="noopener">Portfolio</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-container">
+        <span>© 2026 simplyenv. Released under the MIT License.</span>
+        <span>Hosted on Firebase Free Spark Plan</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>
