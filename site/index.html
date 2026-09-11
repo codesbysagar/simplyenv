@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/style.css?v=2.1">
 
   <script>
     (function() {
@@ -365,38 +365,93 @@
       </div>
 
       <div class="docs-grid">
-        <!-- Step 1 -->
-        <div class="docs-card">
+        <!-- Step 1: Install simplyenv -->
+        <div class="docs-card docs-install-card">
           <div class="docs-card-header">
             <span class="step-num">1</span>
-            <h3>Install simplyenv</h3>
+            <div class="docs-card-title-wrap">
+              <h3>Install simplyenv</h3>
+              <span class="docs-choose-label">Choose <strong>any ONE</strong> of the 3 installation methods:</span>
+            </div>
           </div>
-          <p>Quick install via curl (Linux & macOS):</p>
-          <div class="code-block">
-            <pre><code>curl -fsSL https://simplyenv-4570a.web.app/install.sh | bash</code></pre>
+
+          <!-- Method Selector Buttons (3 Distinct Options) -->
+          <div class="docs-method-selector" role="tablist">
+            <button class="docs-method-btn active" data-method="curl" role="tab" aria-selected="true">
+              <span class="method-btn-badge">Recommended</span>
+              <span class="method-btn-title">⚡ 1-Line Script</span>
+            </button>
+            <button class="docs-method-btn" data-method="binaries" role="tab" aria-selected="false">
+              <span class="method-btn-title">📦 Standalone Binaries</span>
+            </button>
+            <button class="docs-method-btn" data-method="go" role="tab" aria-selected="false">
+              <span class="method-btn-title">🐹 Go Toolchain</span>
+            </button>
           </div>
-          <p class="docs-subtext">Pre-compiled Binaries (Zero Dependencies):</p>
-          <div class="docs-binary-links">
-            <a href="/downloads/simplyenv-windows-amd64.zip" download class="docs-link" title="Download simplyenv for Windows 64-bit">
-              <svg class="os-icon os-windows" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h11.377v11.372H0zm12.623 0H24v11.372H12.623zM0 12.628h11.377V24H0zm12.623 0H24V24H12.623z"/></svg>
-              <span>Windows (.zip)</span>
-            </a>
-            <a href="/downloads/simplyenv-darwin-arm64.tar.gz" download class="docs-link" title="Download simplyenv for macOS Apple Silicon">
-              <svg class="os-icon os-apple" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-.73 1.01-1.75.9-2.77-.87.04-1.92.58-2.54 1.31-.55.64-.99 1.67-.86 2.68 1 .08 1.9-.49 2.5-1.22z"/></svg>
-              <span>macOS Silicon</span>
-            </a>
-            <a href="/downloads/simplyenv-darwin-amd64.tar.gz" download class="docs-link" title="Download simplyenv for macOS Intel">
-              <svg class="os-icon os-apple" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-.73 1.01-1.75.9-2.77-.87.04-1.92.58-2.54 1.31-.55.64-.99 1.67-.86 2.68 1 .08 1.9-.49 2.5-1.22z"/></svg>
-              <span>macOS Intel</span>
-            </a>
-            <a href="/downloads/simplyenv-linux-amd64.tar.gz" download class="docs-link" title="Download simplyenv for Linux x86_64">
-              <svg class="os-icon os-linux" viewBox="0 0 24 24" fill="currentColor"><path d="M12.016 0C8.583 0 7.21 2.673 7.21 4.786c0 1.26.47 2.545 1.057 3.513-.306.417-.678.825-1.07 1.244-1.42 1.516-2.997 3.2-2.997 6.457 0 2.835 1.602 4.966 3.813 5.926-.232.493-.362 1.05-.362 1.637 0 .237.03.467.085.688.163.655.753 1.137 1.458 1.137h5.612c.705 0 1.295-.482 1.458-1.137.055-.221.085-.451.085-.688 0-.587-.13-1.144-.362-1.637 2.21-.96 3.813-3.091 3.813-5.926 0-3.257-1.577-4.941-2.997-6.457-.392-.419-.764-.827-1.07-1.244.587-.968 1.057-2.253 1.057-3.513C16.822 2.673 15.449 0 12.016 0zm-2.02 4.197c.452 0 .819.367.819.82 0 .451-.367.818-.82.818-.451 0-.818-.367-.818-.819 0-.452.367-.819.82-.819zm4.04 0c.452 0 .819.367.819.82 0 .451-.367.818-.82.818-.451 0-.819-.367-.819-.819 0-.452.367-.819.82-.819zm-2.02 1.43c1.378 0 2.378.85 2.378 1.597 0 .748-1 1.597-2.378 1.597-1.379 0-2.378-.85-2.378-1.597 0-.748 1-1.597 2.378-1.597z"/></svg>
-              <span>Linux (x64)</span>
-            </a>
+
+          <!-- Option A: Curl Script Panel -->
+          <div class="docs-panel" id="docsPanelCurl">
+            <div class="panel-meta-bar">
+              <span class="panel-pill">Option A</span>
+              <span class="panel-support">macOS & Linux • Auto-detects architecture</span>
+            </div>
+            <p class="panel-desc">Downloads the latest release and installs <code>simplyenv</code> directly to your PATH:</p>
+            <div class="code-box-styled">
+              <code>curl -fsSL https://simplyenv-4570a.web.app/install.sh | bash</code>
+              <button class="copy-panel-btn" data-copy="curl -fsSL https://simplyenv-4570a.web.app/install.sh | bash" title="Copy command">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy</span>
+              </button>
+            </div>
           </div>
-          <p class="docs-subtext" style="margin-top: 8px;">Or install with the Go toolchain:</p>
-          <div class="code-block">
-            <pre><code>go install github.com/codesbysagar/simplyenv/cmd/simplyenv@latest</code></pre>
+
+          <!-- Option B: Direct Download Binaries Panel -->
+          <div class="docs-panel hidden" id="docsPanelBinaries">
+            <div class="panel-meta-bar">
+              <span class="panel-pill">Option B</span>
+              <span class="panel-support">Windows, macOS & Linux • Zero Dependencies</span>
+            </div>
+            <p class="panel-desc">Download a standalone portable binary. No Go toolchain or package manager required:</p>
+            <div class="docs-binary-links">
+              <a href="/downloads/simplyenv-windows-amd64.zip" download class="docs-link" title="Download simplyenv for Windows 64-bit">
+                <svg class="os-icon os-windows" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h11.377v11.372H0zm12.623 0H24v11.372H12.623zM0 12.628h11.377V24H0zm12.623 0H24V24H12.623z"/></svg>
+                <span>Windows (.zip)</span>
+              </a>
+              <a href="/downloads/simplyenv-darwin-arm64.tar.gz" download class="docs-link" title="Download simplyenv for macOS Apple Silicon">
+                <svg class="os-icon os-apple" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-.73 1.01-1.75.9-2.77-.87.04-1.92.58-2.54 1.31-.55.64-.99 1.67-.86 2.68 1 .08 1.9-.49 2.5-1.22z"/></svg>
+                <span>macOS Silicon</span>
+              </a>
+              <a href="/downloads/simplyenv-darwin-amd64.tar.gz" download class="docs-link" title="Download simplyenv for macOS Intel">
+                <svg class="os-icon os-apple" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-.73 1.01-1.75.9-2.77-.87.04-1.92.58-2.54 1.31-.55.64-.99 1.67-.86 2.68 1 .08 1.9-.49 2.5-1.22z"/></svg>
+                <span>macOS Intel</span>
+              </a>
+              <a href="/downloads/simplyenv-linux-amd64.tar.gz" download class="docs-link" title="Download simplyenv for Linux x86_64">
+                <svg class="os-icon os-linux" viewBox="0 0 24 24" fill="currentColor"><path d="M12.016 0C8.583 0 7.21 2.673 7.21 4.786c0 1.26.47 2.545 1.057 3.513-.306.417-.678.825-1.07 1.244-1.42 1.516-2.997 3.2-2.997 6.457 0 2.835 1.602 4.966 3.813 5.926-.232.493-.362 1.05-.362 1.637 0 .237.03.467.085.688.163.655.753 1.137 1.458 1.137h5.612c.705 0 1.295-.482 1.458-1.137.055-.221.085-.451.085-.688 0-.587-.13-1.144-.362-1.637 2.21-.96 3.813-3.091 3.813-5.926 0-3.257-1.577-4.941-2.997-6.457-.392-.419-.764-.827-1.07-1.244.587-.968 1.057-2.253 1.057-3.513C16.822 2.673 15.449 0 12.016 0zm-2.02 4.197c.452 0 .819.367.819.82 0 .451-.367.818-.82.818-.451 0-.818-.367-.818-.819 0-.452.367-.819.82-.819zm4.04 0c.452 0 .819.367.819.82 0 .451-.367.818-.82.818-.451 0-.819-.367-.819-.819 0-.452.367-.819.82-.819zm-2.02 1.43c1.378 0 2.378.85 2.378 1.597 0 .748-1 1.597-2.378 1.597-1.379 0-2.378-.85-2.378-1.597 0-.748 1-1.597 2.378-1.597z"/></svg>
+                <span>Linux (x64)</span>
+              </a>
+            </div>
+            <div style="margin-top: 4px;">
+              <a href="/downloads/sha256sums.txt" target="_blank" class="checksum-link">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                Verify SHA-256 Checksums
+              </a>
+            </div>
+          </div>
+
+          <!-- Option C: Go Toolchain Panel -->
+          <div class="docs-panel hidden" id="docsPanelGo">
+            <div class="panel-meta-bar">
+              <span class="panel-pill">Option C</span>
+              <span class="panel-support">Requires Go 1.22+ Installed</span>
+            </div>
+            <p class="panel-desc">Compile from source and install the executable directly into <code>$GOPATH/bin</code>:</p>
+            <div class="code-box-styled">
+              <code>go install github.com/codesbysagar/simplyenv/cmd/simplyenv@latest</code>
+              <button class="copy-panel-btn" data-copy="go install github.com/codesbysagar/simplyenv/cmd/simplyenv@latest" title="Copy command">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -525,6 +580,6 @@
     </div>
   </footer>
 
-  <script src="/app.js"></script>
+  <script src="/app.js?v=2.1"></script>
 </body>
 </html>

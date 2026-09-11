@@ -98,6 +98,57 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
+  // Docs Method Selector (Step 1 Installation Options)
+  const docsMethodBtns = document.querySelectorAll('.docs-method-btn');
+  const docsPanels = {
+    curl: document.getElementById('docsPanelCurl'),
+    binaries: document.getElementById('docsPanelBinaries'),
+    go: document.getElementById('docsPanelGo')
+  };
+
+  docsMethodBtns.forEach(btn => {
+    btn.onclick = () => {
+      docsMethodBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+
+      const method = btn.getAttribute('data-method');
+      Object.entries(docsPanels).forEach(([key, panel]) => {
+        if (panel) {
+          if (key === method) {
+            panel.classList.remove('hidden');
+          } else {
+            panel.classList.add('hidden');
+          }
+        }
+      });
+    };
+  });
+
+  // Copy Panel Buttons in Docs
+  document.querySelectorAll('.copy-panel-btn').forEach(btn => {
+    btn.onclick = () => {
+      const textToCopy = btn.getAttribute('data-copy');
+      if (textToCopy) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          const span = btn.querySelector('span');
+          const original = span ? span.textContent : 'Copy';
+          if (span) span.textContent = 'Copied!';
+          btn.style.borderColor = 'var(--accent-emerald)';
+          btn.style.color = 'var(--accent-emerald)';
+          setTimeout(() => {
+            if (span) span.textContent = original;
+            btn.style.borderColor = '';
+            btn.style.color = '';
+          }, 2000);
+        });
+      }
+    };
+  });
+
   // Initialize
   initTheme();
 });
