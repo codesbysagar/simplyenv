@@ -434,8 +434,75 @@ body {
 }
 
 .binary-icon {
-  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
+}
+
+.os-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.binary-btn:hover .os-icon,
+.docs-link:hover .os-icon {
+  transform: scale(1.1);
+}
+
+.os-windows {
+  color: #0078D4;
+}
+
+.os-apple {
+  color: var(--text-main);
+}
+
+.os-linux {
+  color: #E95420;
+}
+
+[data-theme="dark"] .os-linux {
+  color: #F8CA3F;
+}
+
+.docs-binary-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 16px;
+}
+
+.docs-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+}
+
+.docs-link .os-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.docs-link:hover {
+  border-color: var(--primary);
+  background-color: var(--bg-card-hover);
+  color: var(--primary);
+  transform: translateY(-1px);
 }
 
 .binary-info {

@@ -70,7 +70,18 @@ jobs:
           echo "Builds completed successfully:"
           ls -lh site/downloads/
 
+      - name: Check Firebase Credentials
+        id: check_creds
+        run: |
+          if [ -z "${{ secrets.FIREBASE_SERVICE_ACCOUNT_SIMPLYENV_4570A }}" ]; then
+            echo "has_secret=false" >> $GITHUB_OUTPUT
+            echo "::warning title=Missing Firebase Secret::FIREBASE_SERVICE_ACCOUNT_SIMPLYENV_4570A secret is not configured in GitHub Secrets. To enable automatic deployments, please add your Firebase Service Account JSON key to https://github.com/${{ github.repository }}/settings/secrets/actions"
+          else
+            echo "has_secret=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy to Firebase Hosting
+        if: steps.check_creds.outputs.has_secret == 'true'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
