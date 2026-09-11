@@ -1152,8 +1152,91 @@ body {
 .footer-bottom-container {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
   font-size: 0.78rem;
   color: var(--text-dim);
+}
+
+.footer-credit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 500;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.footer-credit-link::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.12), transparent);
+  animation: creditSweep 3.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes creditSweep {
+  0% { left: -100%; }
+  35%, 100% { left: 100%; }
+}
+
+.footer-credit-link .credit-brand {
+  font-weight: 700;
+  background: linear-gradient(90deg, #10B981, #06B6D4, #6366F1, #EC4899, #10B981);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: creditGradient 4s linear infinite;
+  letter-spacing: -0.01em;
+}
+
+@keyframes creditGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.footer-credit-link .credit-arrow {
+  color: var(--text-dim);
+  transition: transform 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.footer-credit-link:hover {
+  border-color: var(--primary);
+  color: var(--text-main);
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);
+}
+
+.footer-credit-link:hover .credit-arrow {
+  transform: translate(2px, -2px);
+  color: var(--primary);
+}
+
+[data-theme="dark"] .footer-credit-link {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .footer-credit-link:hover {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
 }
 
 /* Responsive */

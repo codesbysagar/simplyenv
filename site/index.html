@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>simplyenv — The Developer's Environment Manager & Modern direnv Alternative</title>
-  <meta name="description" content="Automate project environment variables without the headaches. simplyenv combines automatic shell directory switching with a modern graphical UI, secret masking, and 1-click shell integration.">
+  <meta name="description"
+    content="Automate project environment variables without the headaches. simplyenv combines automatic shell directory switching with a modern graphical UI, secret masking, and 1-click shell integration.">
   <link rel="canonical" href="https://simplyenv.web.app">
 
   <!-- Open Graph / Social Media -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://simplyenv.web.app">
   <meta property="og:title" content="simplyenv — The Developer's Environment Manager">
-  <meta property="og:description" content="The modern, visual alternative to direnv with automatic shell switching, secret masking, and bulk import/export.">
+  <meta property="og:description"
+    content="The modern, visual alternative to direnv with automatic shell switching, secret masking, and bulk import/export.">
   <meta property="og:image" content="/assets/simplyenv-logo.png">
 
   <!-- Favicon -->
@@ -21,16 +24,19 @@
   <!-- Fonts & Styles -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css?v=2.2">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/style.css?v=2.3">
 
   <script>
-    (function() {
+    (function () {
       const theme = localStorage.getItem('simplyenv_site_theme') || 'light';
       document.documentElement.setAttribute('data-theme', theme);
     })();
   </script>
 </head>
+
 <body>
   <!-- Header Navbar -->
   <header class="navbar">
@@ -48,7 +54,8 @@
         <a href="#community">Community</a>
         <a href="https://github.com/codesbysagar/simplyenv" target="_blank" rel="noopener" class="nav-link-github">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            <path
+              d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
           </svg>
           <span>GitHub</span>
         </a>
@@ -56,10 +63,12 @@
 
       <div class="nav-actions">
         <button id="themeToggleBtn" class="theme-btn" title="Toggle Light / Dark Mode">
-          <svg id="themeMoonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg id="themeMoonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
-          <svg id="themeSunIcon" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg id="themeSunIcon" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
             <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -90,7 +99,8 @@
       </h1>
 
       <p class="hero-subtitle">
-        The user-friendly alternative to direnv. Automatically switch environment variables as you <code>cd</code> through projects, inspect secrets in a sleek graphical UI, and install shell hooks with a single click.
+        The user-friendly alternative to direnv. Automatically switch environment variables as you <code>cd</code>
+        through projects, inspect secrets in a sleek graphical UI, and install shell hooks with a single click.
       </p>
 
       <!-- Terminal Install Snippet -->
@@ -117,10 +127,12 @@
         <!-- Pre-built Binaries Download Box -->
         <div class="install-binaries-box hidden" id="installBinariesBox">
           <div class="binary-buttons-grid">
-            <a href="/downloads/simplyenv-windows-amd64.zip" class="binary-btn" download title="Download simplyenv for Windows 64-bit">
+            <a href="/downloads/simplyenv-windows-amd64.zip" class="binary-btn" download
+              title="Download simplyenv for Windows 64-bit">
               <span class="binary-icon">
                 <svg class="os-icon os-windows" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M0 0h11.377v11.372H0zm12.623 0H24v11.372H12.623zM0 12.628h11.377V24H0zm12.623 0H24V24H12.623z"/>
+                  <path
+                    d="M0 0h11.377v11.372H0zm12.623 0H24v11.372H12.623zM0 12.628h11.377V24H0zm12.623 0H24V24H12.623z" />
                 </svg>
               </span>
               <div class="binary-info">
@@ -128,10 +140,12 @@
                 <span class="binary-meta">.zip (4.9 MB)</span>
               </div>
             </a>
-            <a href="/downloads/simplyenv-darwin-arm64.tar.gz" class="binary-btn" download title="Download simplyenv for Apple Silicon">
+            <a href="/downloads/simplyenv-darwin-arm64.tar.gz" class="binary-btn" download
+              title="Download simplyenv for Apple Silicon">
               <span class="binary-icon">
                 <svg class="os-icon os-apple" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-.73 1.01-1.75.9-2.77-.87.04-1.92.58-2.54 1.31-.55.64-.99 1.67-.86 2.68 1 .08 1.9-.49 2.5-1.22z"/>
+                  <path
+                    d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-.73 1.01-1.75.9-2.77-.87.04-1.92.58-2.54 1.31-.55.64-.99 1.67-.86 2.68 1 .08 1.9-.49 2.5-1.22z" />
                 </svg>
               </span>
               <div class="binary-info">
@@ -139,10 +153,12 @@
                 <span class="binary-meta">.tar.gz (M1/M2/M3/M4)</span>
               </div>
             </a>
-            <a href="/downloads/simplyenv-darwin-amd64.tar.gz" class="binary-btn" download title="Download simplyenv for macOS Intel">
+            <a href="/downloads/simplyenv-darwin-amd64.tar.gz" class="binary-btn" download
+              title="Download simplyenv for macOS Intel">
               <span class="binary-icon">
                 <svg class="os-icon os-apple" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-.73 1.01-1.75.9-2.77-.87.04-1.92.58-2.54 1.31-.55.64-.99 1.67-.86 2.68 1 .08 1.9-.49 2.5-1.22z"/>
+                  <path
+                    d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-.73 1.01-1.75.9-2.77-.87.04-1.92.58-2.54 1.31-.55.64-.99 1.67-.86 2.68 1 .08 1.9-.49 2.5-1.22z" />
                 </svg>
               </span>
               <div class="binary-info">
@@ -150,19 +166,27 @@
                 <span class="binary-meta">.tar.gz (4.8 MB)</span>
               </div>
             </a>
-            <a href="/downloads/simplyenv-linux-amd64.tar.gz" class="binary-btn" download title="Download simplyenv for Linux x86_64">
+            <a href="/downloads/simplyenv-linux-amd64.tar.gz" class="binary-btn" download
+              title="Download simplyenv for Linux x86_64">
               <span class="binary-icon">
                 <svg class="os-icon os-tux" viewBox="0 0 24 24" width="20" height="20" fill="none">
-                  <path d="M12 2C9.2 2 8 4.6 8 8C8 10.3 8.3 12.2 7 14C5.5 16 3.5 17.5 3.5 20C3.5 22.2 6.5 22.5 9 22.5C9.8 22.5 10.8 22.4 12 22.4C13.2 22.4 14.2 22.5 15 22.5C17.5 22.5 20.5 22.2 20.5 20C20.5 17.5 18.5 16 17 14C15.7 12.2 16 10.3 16 8C16 4.6 14.8 2 12 2Z" fill="#1C1D21" stroke="rgba(255,255,255,0.2)" stroke-width="0.6"/>
-                  <ellipse cx="12" cy="15.5" rx="4.2" ry="5.5" fill="#FFFFFF"/>
-                  <ellipse cx="10.2" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF"/>
-                  <ellipse cx="13.8" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF"/>
-                  <circle cx="10.5" cy="7.2" r="0.6" fill="#000000"/>
-                  <circle cx="13.5" cy="7.2" r="0.6" fill="#000000"/>
-                  <path d="M10.2 9C10.2 9 11 11.2 12 11.2C13 11.2 13.8 9 13.8 9C13.8 9 13.2 9.7 12 9.7C10.8 9.7 10.2 9 10.2 9Z" fill="#D97706"/>
-                  <ellipse cx="12" cy="9.2" rx="1.8" ry="0.8" fill="#FBBF24"/>
-                  <path d="M6 21.5C4.5 21.5 4 22.8 5.2 23.5C6.5 24.2 9.5 23.8 10.2 22.5C10.5 21.8 7.5 21.5 6 21.5Z" fill="#F59E0B"/>
-                  <path d="M18 21.5C19.5 21.5 20 22.8 18.8 23.5C17.5 24.2 14.5 23.8 13.8 22.5C13.5 21.8 16.5 21.5 18 21.5Z" fill="#F59E0B"/>
+                  <path
+                    d="M12 2C9.2 2 8 4.6 8 8C8 10.3 8.3 12.2 7 14C5.5 16 3.5 17.5 3.5 20C3.5 22.2 6.5 22.5 9 22.5C9.8 22.5 10.8 22.4 12 22.4C13.2 22.4 14.2 22.5 15 22.5C17.5 22.5 20.5 22.2 20.5 20C20.5 17.5 18.5 16 17 14C15.7 12.2 16 10.3 16 8C16 4.6 14.8 2 12 2Z"
+                    fill="#1C1D21" stroke="rgba(255,255,255,0.2)" stroke-width="0.6" />
+                  <ellipse cx="12" cy="15.5" rx="4.2" ry="5.5" fill="#FFFFFF" />
+                  <ellipse cx="10.2" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF" />
+                  <ellipse cx="13.8" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF" />
+                  <circle cx="10.5" cy="7.2" r="0.6" fill="#000000" />
+                  <circle cx="13.5" cy="7.2" r="0.6" fill="#000000" />
+                  <path
+                    d="M10.2 9C10.2 9 11 11.2 12 11.2C13 11.2 13.8 9 13.8 9C13.8 9 13.2 9.7 12 9.7C10.8 9.7 10.2 9 10.2 9Z"
+                    fill="#D97706" />
+                  <ellipse cx="12" cy="9.2" rx="1.8" ry="0.8" fill="#FBBF24" />
+                  <path d="M6 21.5C4.5 21.5 4 22.8 5.2 23.5C6.5 24.2 9.5 23.8 10.2 22.5C10.5 21.8 7.5 21.5 6 21.5Z"
+                    fill="#F59E0B" />
+                  <path
+                    d="M18 21.5C19.5 21.5 20 22.8 18.8 23.5C17.5 24.2 14.5 23.8 13.8 22.5C13.5 21.8 16.5 21.5 18 21.5Z"
+                    fill="#F59E0B" />
                 </svg>
               </span>
               <div class="binary-info">
@@ -170,19 +194,27 @@
                 <span class="binary-meta">.tar.gz (4.8 MB)</span>
               </div>
             </a>
-            <a href="/downloads/simplyenv-linux-arm64.tar.gz" class="binary-btn" download title="Download simplyenv for Linux ARM64">
+            <a href="/downloads/simplyenv-linux-arm64.tar.gz" class="binary-btn" download
+              title="Download simplyenv for Linux ARM64">
               <span class="binary-icon">
                 <svg class="os-icon os-tux" viewBox="0 0 24 24" width="20" height="20" fill="none">
-                  <path d="M12 2C9.2 2 8 4.6 8 8C8 10.3 8.3 12.2 7 14C5.5 16 3.5 17.5 3.5 20C3.5 22.2 6.5 22.5 9 22.5C9.8 22.5 10.8 22.4 12 22.4C13.2 22.4 14.2 22.5 15 22.5C17.5 22.5 20.5 22.2 20.5 20C20.5 17.5 18.5 16 17 14C15.7 12.2 16 10.3 16 8C16 4.6 14.8 2 12 2Z" fill="#1C1D21" stroke="rgba(255,255,255,0.2)" stroke-width="0.6"/>
-                  <ellipse cx="12" cy="15.5" rx="4.2" ry="5.5" fill="#FFFFFF"/>
-                  <ellipse cx="10.2" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF"/>
-                  <ellipse cx="13.8" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF"/>
-                  <circle cx="10.5" cy="7.2" r="0.6" fill="#000000"/>
-                  <circle cx="13.5" cy="7.2" r="0.6" fill="#000000"/>
-                  <path d="M10.2 9C10.2 9 11 11.2 12 11.2C13 11.2 13.8 9 13.8 9C13.8 9 13.2 9.7 12 9.7C10.8 9.7 10.2 9 10.2 9Z" fill="#D97706"/>
-                  <ellipse cx="12" cy="9.2" rx="1.8" ry="0.8" fill="#FBBF24"/>
-                  <path d="M6 21.5C4.5 21.5 4 22.8 5.2 23.5C6.5 24.2 9.5 23.8 10.2 22.5C10.5 21.8 7.5 21.5 6 21.5Z" fill="#F59E0B"/>
-                  <path d="M18 21.5C19.5 21.5 20 22.8 18.8 23.5C17.5 24.2 14.5 23.8 13.8 22.5C13.5 21.8 16.5 21.5 18 21.5Z" fill="#F59E0B"/>
+                  <path
+                    d="M12 2C9.2 2 8 4.6 8 8C8 10.3 8.3 12.2 7 14C5.5 16 3.5 17.5 3.5 20C3.5 22.2 6.5 22.5 9 22.5C9.8 22.5 10.8 22.4 12 22.4C13.2 22.4 14.2 22.5 15 22.5C17.5 22.5 20.5 22.2 20.5 20C20.5 17.5 18.5 16 17 14C15.7 12.2 16 10.3 16 8C16 4.6 14.8 2 12 2Z"
+                    fill="#1C1D21" stroke="rgba(255,255,255,0.2)" stroke-width="0.6" />
+                  <ellipse cx="12" cy="15.5" rx="4.2" ry="5.5" fill="#FFFFFF" />
+                  <ellipse cx="10.2" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF" />
+                  <ellipse cx="13.8" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF" />
+                  <circle cx="10.5" cy="7.2" r="0.6" fill="#000000" />
+                  <circle cx="13.5" cy="7.2" r="0.6" fill="#000000" />
+                  <path
+                    d="M10.2 9C10.2 9 11 11.2 12 11.2C13 11.2 13.8 9 13.8 9C13.8 9 13.2 9.7 12 9.7C10.8 9.7 10.2 9 10.2 9Z"
+                    fill="#D97706" />
+                  <ellipse cx="12" cy="9.2" rx="1.8" ry="0.8" fill="#FBBF24" />
+                  <path d="M6 21.5C4.5 21.5 4 22.8 5.2 23.5C6.5 24.2 9.5 23.8 10.2 22.5C10.5 21.8 7.5 21.5 6 21.5Z"
+                    fill="#F59E0B" />
+                  <path
+                    d="M18 21.5C19.5 21.5 20 22.8 18.8 23.5C17.5 24.2 14.5 23.8 13.8 22.5C13.5 21.8 16.5 21.5 18 21.5Z"
+                    fill="#F59E0B" />
                 </svg>
               </span>
               <div class="binary-info">
@@ -193,7 +225,9 @@
           </div>
           <div class="binaries-footer">
             <a href="/downloads/sha256sums.txt" target="_blank" class="checksum-link">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
               Verify SHA-256 Checksums
             </a>
           </div>
@@ -202,9 +236,11 @@
 
       <div class="hero-cta-group">
         <a href="#docs" class="btn btn-primary btn-lg">Quick Start Guide</a>
-        <a href="https://github.com/codesbysagar/simplyenv" target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
+        <a href="https://github.com/codesbysagar/simplyenv" target="_blank" rel="noopener"
+          class="btn btn-secondary btn-lg">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+            <path
+              d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
           </svg>
           <span>Star on GitHub</span>
         </a>
@@ -223,7 +259,8 @@
           </div>
         </div>
         <div class="frame-content">
-          <img id="showcaseImg" src="/assets/dashboard_light_mode_1789106014791.png" alt="simplyenv UI Dashboard Mockup" class="showcase-img">
+          <img id="showcaseImg" src="/assets/dashboard_light_mode_1789106014791.png" alt="simplyenv UI Dashboard Mockup"
+            class="showcase-img">
         </div>
       </div>
     </div>
@@ -235,7 +272,8 @@
       <div class="section-heading">
         <span class="pill-badge">COMPARISON</span>
         <h2>Why simplyenv vs direnv?</h2>
-        <p>direnv was groundbreaking, but its CLI-only nature, manual dotfile configuration, and lack of visual tooling cause friction. simplyenv retains full direnv compatibility while fixing developer pain points.</p>
+        <p>direnv was groundbreaking, but its CLI-only nature, manual dotfile configuration, and lack of visual tooling
+          cause friction. simplyenv retains full direnv compatibility while fixing developer pain points.</p>
       </div>
 
       <div class="comparison-table-wrapper">
@@ -265,7 +303,8 @@
             </tr>
             <tr>
               <td><strong>1-Click Automated Shell Hook Setup</strong></td>
-              <td class="col-simplyenv"><span class="check-icon">✓</span> <strong>Yes (1-click / 1-command)</strong></td>
+              <td class="col-simplyenv"><span class="check-icon">✓</span> <strong>Yes (1-click / 1-command)</strong>
+              </td>
               <td><span class="cross-icon">✗</span> Manual copy-paste in dotfiles</td>
             </tr>
             <tr>
@@ -275,12 +314,14 @@
             </tr>
             <tr>
               <td><strong>Multi-Format Bulk Import & Export</strong></td>
-              <td class="col-simplyenv"><span class="check-icon">✓</span> <strong>.env, JSON, Shell, Docker</strong></td>
+              <td class="col-simplyenv"><span class="check-icon">✓</span> <strong>.env, JSON, Shell, Docker</strong>
+              </td>
               <td><span class="cross-icon">✗</span> No bulk formats</td>
             </tr>
             <tr>
               <td><strong>Central Project Directory Catalog</strong></td>
-              <td class="col-simplyenv"><span class="check-icon">✓</span> <strong>Yes (~/.config/simplyenv)</strong></td>
+              <td class="col-simplyenv"><span class="check-icon">✓</span> <strong>Yes (~/.config/simplyenv)</strong>
+              </td>
               <td><span class="cross-icon">✗</span> Must cd into folders</td>
             </tr>
             <tr>
@@ -300,7 +341,8 @@
       <div class="section-heading">
         <span class="pill-badge">CORE FEATURES</span>
         <h2>Built for Modern Developer Workflows</h2>
-        <p>Everything you need to manage local configurations, keep team secrets secure, and streamline shell automation.</p>
+        <p>Everything you need to manage local configurations, keep team secrets secure, and streamline shell
+          automation.</p>
       </div>
 
       <div class="features-grid">
@@ -313,7 +355,8 @@
             </svg>
           </div>
           <h3>Modern Minimalist UI</h3>
-          <p>Inspect, filter, add, and edit variables with a clean matte dashboard. Comes with both Light Mode and Dark Mode out of the box.</p>
+          <p>Inspect, filter, add, and edit variables with a clean matte dashboard. Comes with both Light Mode and Dark
+            Mode out of the box.</p>
         </div>
 
         <div class="feature-card">
@@ -323,7 +366,9 @@
             </svg>
           </div>
           <h3>1-Click Shell Hook Setup</h3>
-          <p>No more digging through <code>~/.bashrc</code> or <code>~/.zshrc</code>. Run <code>simplyenv install-hook</code> or click one button in the UI to configure your shell.</p>
+          <p>No more digging through <code>~/.bashrc</code> or <code>~/.zshrc</code>. Run
+            <code>simplyenv install-hook</code> or click one button in the UI to configure your shell.
+          </p>
         </div>
 
         <div class="feature-card">
@@ -334,7 +379,8 @@
             </svg>
           </div>
           <h3>Secret Masking & Security</h3>
-          <p>Sensitive tokens, API keys, and credentials are masked by default to protect you during screen shares, paired programming, and live streams.</p>
+          <p>Sensitive tokens, API keys, and credentials are masked by default to protect you during screen shares,
+            paired programming, and live streams.</p>
         </div>
 
         <div class="feature-card">
@@ -346,7 +392,8 @@
             </svg>
           </div>
           <h3>Multi-Format Bulk Import/Export</h3>
-          <p>Drag and drop <code>.env</code> or JSON files. Export variables directly into Dockerfile <code>ENV</code>, POSIX Shell <code>export</code>, or JSON formats.</p>
+          <p>Drag and drop <code>.env</code> or JSON files. Export variables directly into Dockerfile <code>ENV</code>,
+            POSIX Shell <code>export</code>, or JSON formats.</p>
         </div>
 
         <div class="feature-card">
@@ -356,7 +403,8 @@
             </svg>
           </div>
           <h3>Central Directory Catalog</h3>
-          <p>Manage all your local project directories from a unified sidebar. View active environments without navigating to them in your terminal.</p>
+          <p>Manage all your local project directories from a unified sidebar. View active environments without
+            navigating to them in your terminal.</p>
         </div>
 
         <div class="feature-card">
@@ -367,7 +415,9 @@
             </svg>
           </div>
           <h3>Full-Featured CLI</h3>
-          <p>Prefer the keyboard? Manage everything from terminal with <code>simplyenv set</code>, <code>simplyenv list</code>, <code>simplyenv import</code>, and <code>simplyenv export</code>.</p>
+          <p>Prefer the keyboard? Manage everything from terminal with <code>simplyenv set</code>,
+            <code>simplyenv list</code>, <code>simplyenv import</code>, and <code>simplyenv export</code>.
+          </p>
         </div>
       </div>
     </div>
@@ -413,11 +463,16 @@
               <span class="panel-pill">Option A</span>
               <span class="panel-support">macOS & Linux • Auto-detects architecture</span>
             </div>
-            <p class="panel-desc">Downloads the latest release and installs <code>simplyenv</code> directly to your PATH:</p>
+            <p class="panel-desc">Downloads the latest release and installs <code>simplyenv</code> directly to your
+              PATH:</p>
             <div class="code-box-styled">
               <code>curl -fsSL https://simplyenv.codesbysagar.com/install.sh | bash</code>
-              <button class="copy-panel-btn" data-copy="curl -fsSL https://simplyenv.codesbysagar.com/install.sh | bash" title="Copy command">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <button class="copy-panel-btn" data-copy="curl -fsSL https://simplyenv.codesbysagar.com/install.sh | bash"
+                title="Copy command">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
                 <span>Copy</span>
               </button>
             </div>
@@ -429,54 +484,85 @@
               <span class="panel-pill">Option B</span>
               <span class="panel-support">Windows, macOS & Linux • Zero Dependencies</span>
             </div>
-            <p class="panel-desc">Download a standalone portable binary. No Go toolchain or package manager required:</p>
+            <p class="panel-desc">Download a standalone portable binary. No Go toolchain or package manager required:
+            </p>
             <div class="docs-binary-links">
-              <a href="/downloads/simplyenv-windows-amd64.zip" download class="docs-link" title="Download simplyenv for Windows 64-bit">
-                <svg class="os-icon os-windows" viewBox="0 0 24 24" fill="currentColor"><path d="M0 0h11.377v11.372H0zm12.623 0H24v11.372H12.623zM0 12.628h11.377V24H0zm12.623 0H24V24H12.623z"/></svg>
+              <a href="/downloads/simplyenv-windows-amd64.zip" download class="docs-link"
+                title="Download simplyenv for Windows 64-bit">
+                <svg class="os-icon os-windows" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M0 0h11.377v11.372H0zm12.623 0H24v11.372H12.623zM0 12.628h11.377V24H0zm12.623 0H24V24H12.623z" />
+                </svg>
                 <span>x64 (.zip)</span>
               </a>
-              <a href="/downloads/simplyenv-darwin-arm64.tar.gz" download class="docs-link" title="Download simplyenv for macOS Apple Silicon">
-                <svg class="os-icon os-apple" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-.73 1.01-1.75.9-2.77-.87.04-1.92.58-2.54 1.31-.55.64-.99 1.67-.86 2.68 1 .08 1.9-.49 2.5-1.22z"/></svg>
-                <span>Apple Silicon</span>
+              <a href="/downloads/simplyenv-darwin-arm64.tar.gz" download class="docs-link"
+                title="Download simplyenv for macOS Apple Silicon">
+                <svg class="os-icon os-apple" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-.73 1.01-1.75.9-2.77-.87.04-1.92.58-2.54 1.31-.55.64-.99 1.67-.86 2.68 1 .08 1.9-.49 2.5-1.22z" />
+                </svg>
+                <span>Silicon</span>
               </a>
-              <a href="/downloads/simplyenv-darwin-amd64.tar.gz" download class="docs-link" title="Download simplyenv for macOS Intel">
-                <svg class="os-icon os-apple" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-.73 1.01-1.75.9-2.77-.87.04-1.92.58-2.54 1.31-.55.64-.99 1.67-.86 2.68 1 .08 1.9-.49 2.5-1.22z"/></svg>
+              <a href="/downloads/simplyenv-darwin-amd64.tar.gz" download class="docs-link"
+                title="Download simplyenv for macOS Intel">
+                <svg class="os-icon os-apple" viewBox="0 0 24 24" fill="currentColor">
+                  <path
+                    d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.42c.6-.73 1.01-1.75.9-2.77-.87.04-1.92.58-2.54 1.31-.55.64-.99 1.67-.86 2.68 1 .08 1.9-.49 2.5-1.22z" />
+                </svg>
                 <span>Intel</span>
               </a>
-              <a href="/downloads/simplyenv-linux-amd64.tar.gz" download class="docs-link" title="Download simplyenv for Linux x86_64">
+              <a href="/downloads/simplyenv-linux-amd64.tar.gz" download class="docs-link"
+                title="Download simplyenv for Linux x86_64">
                 <svg class="os-icon os-tux" viewBox="0 0 24 24" width="16" height="16" fill="none">
-                  <path d="M12 2C9.2 2 8 4.6 8 8C8 10.3 8.3 12.2 7 14C5.5 16 3.5 17.5 3.5 20C3.5 22.2 6.5 22.5 9 22.5C9.8 22.5 10.8 22.4 12 22.4C13.2 22.4 14.2 22.5 15 22.5C17.5 22.5 20.5 22.2 20.5 20C20.5 17.5 18.5 16 17 14C15.7 12.2 16 10.3 16 8C16 4.6 14.8 2 12 2Z" fill="#1C1D21" stroke="rgba(255,255,255,0.2)" stroke-width="0.6"/>
-                  <ellipse cx="12" cy="15.5" rx="4.2" ry="5.5" fill="#FFFFFF"/>
-                  <ellipse cx="10.2" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF"/>
-                  <ellipse cx="13.8" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF"/>
-                  <circle cx="10.5" cy="7.2" r="0.6" fill="#000000"/>
-                  <circle cx="13.5" cy="7.2" r="0.6" fill="#000000"/>
-                  <path d="M10.2 9C10.2 9 11 11.2 12 11.2C13 11.2 13.8 9 13.8 9C13.8 9 13.2 9.7 12 9.7C10.8 9.7 10.2 9 10.2 9Z" fill="#D97706"/>
-                  <ellipse cx="12" cy="9.2" rx="1.8" ry="0.8" fill="#FBBF24"/>
-                  <path d="M6 21.5C4.5 21.5 4 22.8 5.2 23.5C6.5 24.2 9.5 23.8 10.2 22.5C10.5 21.8 7.5 21.5 6 21.5Z" fill="#F59E0B"/>
-                  <path d="M18 21.5C19.5 21.5 20 22.8 18.8 23.5C17.5 24.2 14.5 23.8 13.8 22.5C13.5 21.8 16.5 21.5 18 21.5Z" fill="#F59E0B"/>
+                  <path
+                    d="M12 2C9.2 2 8 4.6 8 8C8 10.3 8.3 12.2 7 14C5.5 16 3.5 17.5 3.5 20C3.5 22.2 6.5 22.5 9 22.5C9.8 22.5 10.8 22.4 12 22.4C13.2 22.4 14.2 22.5 15 22.5C17.5 22.5 20.5 22.2 20.5 20C20.5 17.5 18.5 16 17 14C15.7 12.2 16 10.3 16 8C16 4.6 14.8 2 12 2Z"
+                    fill="#1C1D21" stroke="rgba(255,255,255,0.2)" stroke-width="0.6" />
+                  <ellipse cx="12" cy="15.5" rx="4.2" ry="5.5" fill="#FFFFFF" />
+                  <ellipse cx="10.2" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF" />
+                  <ellipse cx="13.8" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF" />
+                  <circle cx="10.5" cy="7.2" r="0.6" fill="#000000" />
+                  <circle cx="13.5" cy="7.2" r="0.6" fill="#000000" />
+                  <path
+                    d="M10.2 9C10.2 9 11 11.2 12 11.2C13 11.2 13.8 9 13.8 9C13.8 9 13.2 9.7 12 9.7C10.8 9.7 10.2 9 10.2 9Z"
+                    fill="#D97706" />
+                  <ellipse cx="12" cy="9.2" rx="1.8" ry="0.8" fill="#FBBF24" />
+                  <path d="M6 21.5C4.5 21.5 4 22.8 5.2 23.5C6.5 24.2 9.5 23.8 10.2 22.5C10.5 21.8 7.5 21.5 6 21.5Z"
+                    fill="#F59E0B" />
+                  <path
+                    d="M18 21.5C19.5 21.5 20 22.8 18.8 23.5C17.5 24.2 14.5 23.8 13.8 22.5C13.5 21.8 16.5 21.5 18 21.5Z"
+                    fill="#F59E0B" />
                 </svg>
                 <span>x64</span>
               </a>
-              <a href="/downloads/simplyenv-linux-arm64.tar.gz" download class="docs-link" title="Download simplyenv for Linux ARM64">
+              <a href="/downloads/simplyenv-linux-arm64.tar.gz" download class="docs-link"
+                title="Download simplyenv for Linux ARM64">
                 <svg class="os-icon os-tux" viewBox="0 0 24 24" width="16" height="16" fill="none">
-                  <path d="M12 2C9.2 2 8 4.6 8 8C8 10.3 8.3 12.2 7 14C5.5 16 3.5 17.5 3.5 20C3.5 22.2 6.5 22.5 9 22.5C9.8 22.5 10.8 22.4 12 22.4C13.2 22.4 14.2 22.5 15 22.5C17.5 22.5 20.5 22.2 20.5 20C20.5 17.5 18.5 16 17 14C15.7 12.2 16 10.3 16 8C16 4.6 14.8 2 12 2Z" fill="#1C1D21" stroke="rgba(255,255,255,0.2)" stroke-width="0.6"/>
-                  <ellipse cx="12" cy="15.5" rx="4.2" ry="5.5" fill="#FFFFFF"/>
-                  <ellipse cx="10.2" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF"/>
-                  <ellipse cx="13.8" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF"/>
-                  <circle cx="10.5" cy="7.2" r="0.6" fill="#000000"/>
-                  <circle cx="13.5" cy="7.2" r="0.6" fill="#000000"/>
-                  <path d="M10.2 9C10.2 9 11 11.2 12 11.2C13 11.2 13.8 9 13.8 9C13.8 9 13.2 9.7 12 9.7C10.8 9.7 10.2 9 10.2 9Z" fill="#D97706"/>
-                  <ellipse cx="12" cy="9.2" rx="1.8" ry="0.8" fill="#FBBF24"/>
-                  <path d="M6 21.5C4.5 21.5 4 22.8 5.2 23.5C6.5 24.2 9.5 23.8 10.2 22.5C10.5 21.8 7.5 21.5 6 21.5Z" fill="#F59E0B"/>
-                  <path d="M18 21.5C19.5 21.5 20 22.8 18.8 23.5C17.5 24.2 14.5 23.8 13.8 22.5C13.5 21.8 16.5 21.5 18 21.5Z" fill="#F59E0B"/>
+                  <path
+                    d="M12 2C9.2 2 8 4.6 8 8C8 10.3 8.3 12.2 7 14C5.5 16 3.5 17.5 3.5 20C3.5 22.2 6.5 22.5 9 22.5C9.8 22.5 10.8 22.4 12 22.4C13.2 22.4 14.2 22.5 15 22.5C17.5 22.5 20.5 22.2 20.5 20C20.5 17.5 18.5 16 17 14C15.7 12.2 16 10.3 16 8C16 4.6 14.8 2 12 2Z"
+                    fill="#1C1D21" stroke="rgba(255,255,255,0.2)" stroke-width="0.6" />
+                  <ellipse cx="12" cy="15.5" rx="4.2" ry="5.5" fill="#FFFFFF" />
+                  <ellipse cx="10.2" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF" />
+                  <ellipse cx="13.8" cy="7.2" rx="1.3" ry="2" fill="#FFFFFF" />
+                  <circle cx="10.5" cy="7.2" r="0.6" fill="#000000" />
+                  <circle cx="13.5" cy="7.2" r="0.6" fill="#000000" />
+                  <path
+                    d="M10.2 9C10.2 9 11 11.2 12 11.2C13 11.2 13.8 9 13.8 9C13.8 9 13.2 9.7 12 9.7C10.8 9.7 10.2 9 10.2 9Z"
+                    fill="#D97706" />
+                  <ellipse cx="12" cy="9.2" rx="1.8" ry="0.8" fill="#FBBF24" />
+                  <path d="M6 21.5C4.5 21.5 4 22.8 5.2 23.5C6.5 24.2 9.5 23.8 10.2 22.5C10.5 21.8 7.5 21.5 6 21.5Z"
+                    fill="#F59E0B" />
+                  <path
+                    d="M18 21.5C19.5 21.5 20 22.8 18.8 23.5C17.5 24.2 14.5 23.8 13.8 22.5C13.5 21.8 16.5 21.5 18 21.5Z"
+                    fill="#F59E0B" />
                 </svg>
                 <span>ARM64</span>
               </a>
             </div>
             <div style="margin-top: 4px;">
               <a href="/downloads/sha256sums.txt" target="_blank" class="checksum-link">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
                 Verify SHA-256 Checksums
               </a>
             </div>
@@ -488,11 +574,16 @@
               <span class="panel-pill">Option C</span>
               <span class="panel-support">Requires Go 1.22+ Installed</span>
             </div>
-            <p class="panel-desc">Compile from source and install the executable directly into <code>$GOPATH/bin</code>:</p>
+            <p class="panel-desc">Compile from source and install the executable directly into <code>$GOPATH/bin</code>:
+            </p>
             <div class="code-box-styled">
               <code>go install github.com/codesbysagar/simplyenv/cmd/simplyenv@latest</code>
-              <button class="copy-panel-btn" data-copy="go install github.com/codesbysagar/simplyenv/cmd/simplyenv@latest" title="Copy command">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <button class="copy-panel-btn"
+                data-copy="go install github.com/codesbysagar/simplyenv/cmd/simplyenv@latest" title="Copy command">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
                 <span>Copy</span>
               </button>
             </div>
@@ -569,9 +660,11 @@
         <div class="community-content">
           <span class="pill-badge">OPEN SOURCE</span>
           <h2>Have Questions, Ideas, or Found a Bug?</h2>
-          <p>simplyenv is actively maintained and completely open-source. Report issues, request new integrations, or contribute directly on GitHub.</p>
+          <p>simplyenv is actively maintained and completely open-source. Report issues, request new integrations, or
+            contribute directly on GitHub.</p>
           <div class="community-buttons">
-            <a href="https://github.com/codesbysagar/simplyenv/issues/new" target="_blank" rel="noopener" class="btn btn-primary">
+            <a href="https://github.com/codesbysagar/simplyenv/issues/new" target="_blank" rel="noopener"
+              class="btn btn-primary">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="12" y1="8" x2="12" y2="12"></line>
@@ -579,9 +672,11 @@
               </svg>
               <span>Report an Issue</span>
             </a>
-            <a href="https://github.com/codesbysagar/simplyenv" target="_blank" rel="noopener" class="btn btn-secondary">
+            <a href="https://github.com/codesbysagar/simplyenv" target="_blank" rel="noopener"
+              class="btn btn-secondary">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                <path
+                  d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
               </svg>
               <span>GitHub Repository</span>
             </a>
@@ -619,11 +714,19 @@
     <div class="footer-bottom">
       <div class="container footer-bottom-container">
         <span>© 2026 simplyenv. Released under the MIT License.</span>
-        <span>Hosted on Firebase Free Spark Plan</span>
+        <a href="https://codesbysagar.com" target="_blank" rel="noopener" class="footer-credit-link" title="Visit codesbysagar.com">
+          <span>Developed and maintained by</span>
+          <span class="credit-brand">codesbysagar</span>
+          <svg class="credit-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="7" y1="17" x2="17" y2="7"></line>
+            <polyline points="7 7 17 7 17 17"></polyline>
+          </svg>
+        </a>
       </div>
     </div>
   </footer>
 
-  <script src="/app.js?v=2.2"></script>
+  <script src="/app.js?v=2.3"></script>
 </body>
+
 </html>
