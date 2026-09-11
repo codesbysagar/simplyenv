@@ -96,11 +96,15 @@
       <!-- Terminal Install Snippet -->
       <div class="hero-install-card">
         <div class="install-tabs">
-          <button class="install-tab active" data-tab="go">Go Install</button>
+          <button class="install-tab active" data-tab="curl">Quick Install (curl)</button>
+          <button class="install-tab" data-tab="binaries">Pre-built Binaries</button>
+          <button class="install-tab" data-tab="go">Go Install</button>
           <button class="install-tab" data-tab="git">Build from Source</button>
         </div>
-        <div class="install-code-box">
-          <code id="installCommandText">go install github.com/codesbysagar/simplyenv/cmd/simplyenv@latest</code>
+
+        <!-- Terminal Command Box -->
+        <div class="install-code-box" id="installCodeBox">
+          <code id="installCommandText">curl -fsSL https://simplyenv-4570a.web.app/install.sh | bash</code>
           <button id="copyInstallBtn" class="copy-btn" title="Copy Command">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -108,6 +112,53 @@
             </svg>
             <span class="copy-label">Copy</span>
           </button>
+        </div>
+
+        <!-- Pre-built Binaries Download Box -->
+        <div class="install-binaries-box hidden" id="installBinariesBox">
+          <div class="binary-buttons-grid">
+            <a href="/downloads/simplyenv-windows-amd64.zip" class="binary-btn" download title="Download simplyenv for Windows 64-bit">
+              <span class="binary-icon">🪟</span>
+              <div class="binary-info">
+                <span class="binary-os">Windows 64-bit</span>
+                <span class="binary-meta">.zip (4.9 MB)</span>
+              </div>
+            </a>
+            <a href="/downloads/simplyenv-darwin-arm64.tar.gz" class="binary-btn" download title="Download simplyenv for Apple Silicon">
+              <span class="binary-icon">🍎</span>
+              <div class="binary-info">
+                <span class="binary-os">macOS Apple Silicon</span>
+                <span class="binary-meta">.tar.gz (M1/M2/M3/M4)</span>
+              </div>
+            </a>
+            <a href="/downloads/simplyenv-darwin-amd64.tar.gz" class="binary-btn" download title="Download simplyenv for macOS Intel">
+              <span class="binary-icon">🍏</span>
+              <div class="binary-info">
+                <span class="binary-os">macOS Intel</span>
+                <span class="binary-meta">.tar.gz (4.8 MB)</span>
+              </div>
+            </a>
+            <a href="/downloads/simplyenv-linux-amd64.tar.gz" class="binary-btn" download title="Download simplyenv for Linux x86_64">
+              <span class="binary-icon">🐧</span>
+              <div class="binary-info">
+                <span class="binary-os">Linux x86_64</span>
+                <span class="binary-meta">.tar.gz (4.8 MB)</span>
+              </div>
+            </a>
+            <a href="/downloads/simplyenv-linux-arm64.tar.gz" class="binary-btn" download title="Download simplyenv for Linux ARM64">
+              <span class="binary-icon">🤖</span>
+              <div class="binary-info">
+                <span class="binary-os">Linux ARM64</span>
+                <span class="binary-meta">.tar.gz (4.6 MB)</span>
+              </div>
+            </a>
+          </div>
+          <div class="binaries-footer">
+            <a href="/downloads/sha256sums.txt" target="_blank" class="checksum-link">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              Verify SHA-256 Checksums
+            </a>
+          </div>
         </div>
       </div>
 
@@ -300,14 +351,20 @@
             <span class="step-num">1</span>
             <h3>Install simplyenv</h3>
           </div>
-          <p>Install via the Go toolchain or download pre-compiled releases:</p>
+          <p>Quick install via curl (Linux & macOS):</p>
+          <div class="code-block">
+            <pre><code>curl -fsSL https://simplyenv-4570a.web.app/install.sh | bash</code></pre>
+          </div>
+          <p class="docs-subtext">Pre-compiled Binaries (Zero Dependencies):</p>
+          <div class="docs-binary-links">
+            <a href="/downloads/simplyenv-windows-amd64.zip" download class="docs-link">🪟 Windows (.zip)</a> • 
+            <a href="/downloads/simplyenv-darwin-arm64.tar.gz" download class="docs-link">🍎 macOS Silicon</a> • 
+            <a href="/downloads/simplyenv-darwin-amd64.tar.gz" download class="docs-link">🍏 macOS Intel</a> • 
+            <a href="/downloads/simplyenv-linux-amd64.tar.gz" download class="docs-link">🐧 Linux (x64)</a>
+          </div>
+          <p class="docs-subtext" style="margin-top: 8px;">Or install with the Go toolchain:</p>
           <div class="code-block">
             <pre><code>go install github.com/codesbysagar/simplyenv/cmd/simplyenv@latest</code></pre>
-          </div>
-          <p class="docs-subtext">Or clone and build locally:</p>
-          <div class="code-block">
-            <pre><code>git clone https://github.com/codesbysagar/simplyenv.git
-cd simplyenv && go build -o simplyenv cmd/simplyenv/main.go</code></pre>
           </div>
         </div>
 

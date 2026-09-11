@@ -1,0 +1,79 @@
+name: Build Cross-Platform Binaries & Deploy to Firebase
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    name: Cross-Compile & Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: true
+
+      - name: Build Cross-Platform Binaries
+        run: |
+          mkdir -p dist/linux-amd64 dist/linux-arm64 dist/darwin-arm64 dist/darwin-amd64 dist/windows-amd64
+          mkdir -p site/downloads
+
+          echo "==> Building Linux amd64..."
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o dist/linux-amd64/simplyenv ./cmd/simplyenv
+
+          echo "==> Building Linux arm64..."
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o dist/linux-arm64/simplyenv ./cmd/simplyenv
+
+          echo "==> Building macOS Apple Silicon (arm64)..."
+          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o dist/darwin-arm64/simplyenv ./cmd/simplyenv
+
+          echo "==> Building macOS Intel (amd64)..."
+          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o dist/darwin-amd64/simplyenv ./cmd/simplyenv
+
+          echo "==> Building Windows amd64..."
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o dist/windows-amd64/simplyenv.exe ./cmd/simplyenv
+
+          echo "==> Packaging distribution archives..."
+          tar -czf site/downloads/simplyenv-linux-amd64.tar.gz -C dist/linux-amd64 simplyenv
+          tar -czf site/downloads/simplyenv-linux-arm64.tar.gz -C dist/linux-arm64 simplyenv
+          tar -czf site/downloads/simplyenv-darwin-arm64.tar.gz -C dist/darwin-arm64 simplyenv
+          tar -czf site/downloads/simplyenv-darwin-amd64.tar.gz -C dist/darwin-amd64 simplyenv
+          (cd dist/windows-amd64 && zip -q ../../site/downloads/simplyenv-windows-amd64.zip simplyenv.exe)
+
+          echo "==> Generating SHA256 checksums..."
+          (cd site/downloads && sha256sum simplyenv-* > sha256sums.txt)
+
+          echo "==> Generating release metadata..."
+          cat <<EOF > site/downloads/version.json
+          {
+            "commit": "${{ github.sha }}",
+            "ref": "${{ github.ref }}",
+            "buildDate": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
+            "downloads": {
+              "linux_amd64": "simplyenv-linux-amd64.tar.gz",
+              "linux_arm64": "simplyenv-linux-arm64.tar.gz",
+              "darwin_arm64": "simplyenv-darwin-arm64.tar.gz",
+              "darwin_amd64": "simplyenv-darwin-amd64.tar.gz",
+              "windows_amd64": "simplyenv-windows-amd64.zip"
+            }
+          }
+          EOF
+
+          rm -rf dist
+          echo "Builds completed successfully:"
+          ls -lh site/downloads/
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_SIMPLYENV_4570A }}'
+          channelId: live
+          projectId: simplyenv-4570a

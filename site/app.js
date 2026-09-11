@@ -30,12 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Install Command Tabs
+  // Install Command Tabs & Binaries Switcher
   const installCommands = {
+    curl: 'curl -fsSL https://simplyenv-4570a.web.app/install.sh | bash',
     go: 'go install github.com/codesbysagar/simplyenv/cmd/simplyenv@latest',
-    git: 'git clone https://github.com/codesbysagar/simplyenv.git && cd simplyenv && go build -o simplyenv cmd/simplyenv/main.go'
+    git: 'git clone https://github.com/codesbysagar/simplyenv.git && cd simplyenv && go build -o simplyenv ./cmd/simplyenv'
   };
 
+  const installCodeBox = document.getElementById('installCodeBox');
+  const installBinariesBox = document.getElementById('installBinariesBox');
   const installCommandText = document.getElementById('installCommandText');
   const installTabs = document.querySelectorAll('.install-tab');
 
@@ -44,8 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
       installTabs.forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       const tabKey = tab.getAttribute('data-tab');
-      if (installCommands[tabKey]) {
-        installCommandText.textContent = installCommands[tabKey];
+
+      if (tabKey === 'binaries') {
+        if (installCodeBox) installCodeBox.classList.add('hidden');
+        if (installBinariesBox) installBinariesBox.classList.remove('hidden');
+      } else {
+        if (installBinariesBox) installBinariesBox.classList.add('hidden');
+        if (installCodeBox) installCodeBox.classList.remove('hidden');
+        if (installCommands[tabKey]) {
+          installCommandText.textContent = installCommands[tabKey];
+        }
       }
     };
   });

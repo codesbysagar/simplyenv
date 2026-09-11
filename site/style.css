@@ -393,6 +393,90 @@ body {
   border-color: var(--border-strong);
 }
 
+.install-binaries-box {
+  padding: 16px;
+  background-color: var(--bg-code);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.install-binaries-box.hidden,
+.install-code-box.hidden,
+.hidden {
+  display: none !important;
+}
+
+.binary-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.binary-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--text-main);
+  transition: all 0.15s ease;
+}
+
+.binary-btn:hover {
+  border-color: var(--primary);
+  background-color: var(--bg-card-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.binary-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.binary-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.binary-os {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.binary-meta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.binaries-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-color);
+}
+
+.checksum-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.checksum-link:hover {
+  color: var(--primary);
+}
+
 .hero-cta-group {
   display: flex;
   gap: 14px;

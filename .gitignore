@@ -39,3 +39,11 @@ Thumbs.db
 # Temporary & Log files
 *.log
 tmp/
+
+# Firebase local cache
+.firebase/
+
+# Site generated binary downloads
+site/downloads/*.tar.gz
+site/downloads/*.zip
+site/downloads/sha256sums.txt
