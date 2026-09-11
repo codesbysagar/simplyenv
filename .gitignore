@@ -1,0 +1,41 @@
+# Binaries and executables
+/simplyenv
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+
+# Test binaries and coverage reports
+*.test
+*.out
+*.prof
+
+# Local environment configs and secrets
+.simplyenv
+*.env
+*.env.local
+*.env.*.local
+!.env.example
+
+# Operating System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE & Editor settings
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Temporary & Log files
+*.log
+tmp/
