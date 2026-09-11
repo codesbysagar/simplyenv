@@ -195,6 +195,11 @@ document.addEventListener('DOMContentLoaded', () => {
       mobileNavBackdrop.onclick = closeMobileMenu;
     }
 
+    const mobileNavCloseBtn = document.getElementById('mobileNavCloseBtn');
+    if (mobileNavCloseBtn) {
+      mobileNavCloseBtn.onclick = closeMobileMenu;
+    }
+
     // Close on link click inside drawer
     mobileNavDrawer.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
