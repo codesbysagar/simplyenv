@@ -1,6 +1,6 @@
-// simplyenv Product Website Controller
+// simplyenv Product Website Controller — Retroverse Edition
 document.addEventListener('DOMContentLoaded', () => {
-  // Theme Management
+  // Theme Management (Light / Dark Mode)
   const themeToggleBtn = document.getElementById('themeToggleBtn');
   const themeMoonIcon = document.getElementById('themeMoonIcon');
   const themeSunIcon = document.getElementById('themeSunIcon');
@@ -68,11 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const text = installCommandText.textContent;
       navigator.clipboard.writeText(text).then(() => {
         const label = copyInstallBtn.querySelector('.copy-label');
-        const original = label.textContent;
-        label.textContent = 'Copied!';
-        copyInstallBtn.style.borderColor = 'var(--accent-emerald)';
+        const original = label ? label.textContent : 'Copy';
+        if (label) label.textContent = 'Copied!';
+        copyInstallBtn.style.backgroundColor = 'var(--color-lime)';
+        copyInstallBtn.style.color = '#030100';
+        copyInstallBtn.style.borderColor = '#030100';
         setTimeout(() => {
-          label.textContent = original;
+          if (label) label.textContent = original;
+          copyInstallBtn.style.backgroundColor = '';
+          copyInstallBtn.style.color = '';
           copyInstallBtn.style.borderColor = '';
         }, 2000);
       });
@@ -137,18 +141,82 @@ document.addEventListener('DOMContentLoaded', () => {
           const span = btn.querySelector('span');
           const original = span ? span.textContent : 'Copy';
           if (span) span.textContent = 'Copied!';
-          btn.style.borderColor = 'var(--accent-emerald)';
-          btn.style.color = 'var(--accent-emerald)';
+          btn.style.backgroundColor = 'var(--color-lime)';
+          btn.style.color = '#030100';
+          btn.style.borderColor = '#030100';
           setTimeout(() => {
             if (span) span.textContent = original;
-            btn.style.borderColor = '';
+            btn.style.backgroundColor = '';
             btn.style.color = '';
+            btn.style.borderColor = '';
           }, 2000);
         });
       }
     };
   });
 
-  // Initialize
+  // Mobile Navigation Drawer
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileNavDrawer = document.getElementById('mobileNavDrawer');
+  const mobileNavBackdrop = document.getElementById('mobileNavBackdrop');
+
+  if (mobileMenuBtn && mobileNavDrawer) {
+    const hamburgerIcon = mobileMenuBtn.querySelector('.hamburger-icon');
+    const closeIcon = mobileMenuBtn.querySelector('.close-icon');
+
+    function openMobileMenu() {
+      mobileNavDrawer.classList.add('open');
+      if (mobileNavBackdrop) mobileNavBackdrop.classList.add('open');
+      mobileMenuBtn.setAttribute('aria-expanded', 'true');
+      if (hamburgerIcon) hamburgerIcon.classList.add('hidden');
+      if (closeIcon) closeIcon.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+      mobileNavDrawer.classList.remove('open');
+      if (mobileNavBackdrop) mobileNavBackdrop.classList.remove('open');
+      mobileMenuBtn.setAttribute('aria-expanded', 'false');
+      if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
+      if (closeIcon) closeIcon.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    mobileMenuBtn.onclick = () => {
+      const isOpen = mobileNavDrawer.classList.contains('open');
+      if (isOpen) {
+        closeMobileMenu();
+      } else {
+        openMobileMenu();
+      }
+    };
+
+    if (mobileNavBackdrop) {
+      mobileNavBackdrop.onclick = closeMobileMenu;
+    }
+
+    // Close on link click inside drawer
+    mobileNavDrawer.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        closeMobileMenu();
+      });
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mobileNavDrawer.classList.contains('open')) {
+        closeMobileMenu();
+      }
+    });
+
+    // Close on resize > 768px
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768 && mobileNavDrawer.classList.contains('open')) {
+        closeMobileMenu();
+      }
+    });
+  }
+
+  // Initialize Theme
   initTheme();
 });
