@@ -3,7 +3,7 @@ set -e
 
 # simplyenv universal installer for Linux and macOS
 REPO="codesbysagar/simplyenv"
-BASE_URL="https://simplyenv-4570a.web.app/downloads"
+BASE_URL="https://simplyenv.codesbysagar.com/downloads"
 
 echo "=================================================="
 echo "  🚀 Installing simplyenv — Modern direnv Alternative"
@@ -21,7 +21,7 @@ case "$OS" in
     ;;
   *)
     echo "❌ Error: Unsupported operating system: $OS"
-    echo "For Windows, please download simplyenv-windows-amd64.zip directly from https://simplyenv-4570a.web.app"
+    echo "For Windows, please download simplyenv-windows-amd64.zip directly from https://simplyenv.codesbysagar.com"
     exit 1
     ;;
 esac

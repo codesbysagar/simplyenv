@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Install Command Tabs & Binaries Switcher
   const installCommands = {
-    curl: 'curl -fsSL https://simplyenv-4570a.web.app/install.sh | bash',
+    curl: 'curl -fsSL https://simplyenv.codesbysagar.com/install.sh | bash',
     go: 'go install github.com/codesbysagar/simplyenv/cmd/simplyenv@latest',
     git: 'git clone https://github.com/codesbysagar/simplyenv.git && cd simplyenv && go build -o simplyenv ./cmd/simplyenv'
   };

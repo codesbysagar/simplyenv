@@ -466,36 +466,39 @@ body {
   color: #E95420;
 }
 
-[data-theme="dark"] .os-linux {
-  color: #F8CA3F;
+.os-tux {
+  display: inline-block;
+  flex-shrink: 0;
 }
 
 .docs-binary-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 10px 0 16px;
+  gap: 6px;
+  margin: 6px 0 10px;
 }
 
 .docs-link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
+  gap: 6px;
+  padding: 6px 10px;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   color: var(--text-main);
   text-decoration: none;
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 500;
   box-shadow: var(--shadow-sm);
   transition: all 0.15s ease;
+  white-space: nowrap;
 }
 
 .docs-link .os-icon {
   width: 15px;
   height: 15px;
+  flex-shrink: 0;
 }
 
 .docs-link:hover {
