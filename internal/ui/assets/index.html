@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>simplyenv — Environment Manager</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+  <script>
+    (function() {
+      const theme = localStorage.getItem('simplyenv_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="/logo-icon.png" alt="simplyenv logo" class="brand-logo-img">
+        <div class="brand-info">
+          <span class="brand-name">simplyenv</span>
+          <span class="brand-badge">v1.0</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-header">
+          <span>PROJECTS</span>
+          <button id="addProjectBtn" class="btn-icon" title="Track New Directory">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+        <div id="projectList" class="project-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button id="openShellModalBtn" class="sidebar-action-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 17l6-6-6-6"></path>
+            <path d="M12 19h8"></path>
+          </svg>
+          <span>Shell Hook Setup</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main View -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="directory-breadcrumb">
+            <span class="folder-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </span>
+            <div class="directory-meta">
+              <h1 id="currentProjectName">Select a directory</h1>
+              <span id="currentProjectPath" class="current-path">No active directory</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="searchEnvInput" placeholder="Filter variables (Ctrl+F)...">
+          </div>
+
+          <button id="importBtn" class="btn btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Import</span>
+          </button>
+
+          <button id="exportBtn" class="btn btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Export</span>
+          </button>
+
+          <button id="addVarBtn" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add Variable</span>
+          </button>
+
+          <button id="openTourBtn" class="btn btn-secondary btn-sm" title="Quick Getting Started Guide">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <span>Tour</span>
+          </button>
+
+          <button id="themeToggleBtn" class="btn-icon theme-toggle-btn" title="Toggle Light / Dark Mode">
+            <svg id="themeMoonIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <svg id="themeSunIcon" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <section class="content-body">
+        <div class="stats-bar">
+          <div class="stats-info">
+            <span id="varCountBadge" class="badge">0 variables</span>
+            <span id="configFileBadge" class="badge badge-outline">.simplyenv</span>
+          </div>
+          <div class="view-controls">
+            <button id="toggleMaskAllBtn" class="btn-ghost" title="Toggle Secret Visibility">
+              <svg id="maskEyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <span id="maskToggleText">Reveal Secrets</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Environment Table -->
+        <div class="table-container">
+          <table class="env-table">
+            <thead>
+              <tr>
+                <th style="width: 32%;">VARIABLE KEY</th>
+                <th style="width: 50%;">VALUE</th>
+                <th style="width: 18%; text-align: right;">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="envTableBody">
+              <!-- Rendered by JS -->
+            </tbody>
+          </table>
+
+          <div id="emptyState" class="empty-state">
+            <div class="empty-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                <line x1="6" y1="18" x2="6.01" y2="18"></line>
+              </svg>
+            </div>
+            <h3>No Environment Variables Found</h3>
+            <p>Add environment variables for this directory, or import an existing .env file.</p>
+            <div class="empty-actions">
+              <button id="emptyAddBtn" class="btn btn-primary">Add Variable</button>
+              <button id="emptyImportBtn" class="btn btn-secondary">Import .env</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal: Add / Edit Variable -->
+  <div id="varModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="varModalTitle">Add Environment Variable</h3>
+        <button class="modal-close-btn" data-close="varModal">&times;</button>
+      </div>
+      <form id="varForm">
+        <div class="form-group">
+          <label for="varKeyInput">VARIABLE NAME (KEY)</label>
+          <input type="text" id="varKeyInput" required placeholder="e.g. DATABASE_URL or API_KEY" pattern="[A-Za-z0-9_]+" title="Alphanumeric and underscores only">
+        </div>
+        <div class="form-group">
+          <label for="varValInput">VALUE</label>
+          <div class="val-input-wrapper">
+            <textarea id="varValInput" rows="3" placeholder="Enter variable value..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="varModal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveVarSubmitBtn">Save Variable</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Add Directory / Track Project -->
+  <div id="projectModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Track Project Directory</h3>
+        <button class="modal-close-btn" data-close="projectModal">&times;</button>
+      </div>
+      <form id="projectForm">
+        <div class="form-group">
+          <label for="projectPathInput">DIRECTORY PATH</label>
+          <div class="input-with-button">
+            <input type="text" id="projectPathInput" required placeholder="/absolute/path/to/project">
+            <button type="button" id="useCwdBtn" class="btn btn-secondary">Current Directory</button>
+          </div>
+          <small class="form-hint">simplyenv will create a .simplyenv configuration in this directory if one does not exist.</small>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="projectModal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Track Directory</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Bulk Import -->
+  <div id="importModal" class="modal-overlay">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3>Bulk Import Environment Variables</h3>
+        <button class="modal-close-btn" data-close="importModal">&times;</button>
+      </div>
+      <div class="import-tabs">
+        <button class="tab-btn active" data-import-tab="paste">Paste Content</button>
+        <button class="tab-btn" data-import-tab="file">Upload File</button>
+      </div>
+      <div class="tab-content" id="pasteTabContent">
+        <div class="form-group">
+          <label>PASTE .ENV, KEY=VALUE, OR JSON FORMAT</label>
+          <textarea id="importTextInput" rows="8" placeholder="PORT=3000
+API_KEY=sk_live_12345
+DATABASE_URL=postgres://localhost:5432/mydb"></textarea>
+        </div>
+      </div>
+      <div class="tab-content hidden" id="fileTabContent">
+        <div class="file-drop-zone" id="dropZone">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <p>Drop your <code>.env</code>, <code>.envrc</code>, or <code>.json</code> file here, or click to browse</p>
+          <input type="file" id="fileInput" class="hidden">
+          <button type="button" id="browseFileBtn" class="btn btn-secondary">Browse File</button>
+        </div>
+      </div>
+      <div class="import-options">
+        <label class="checkbox-label">
+          <input type="checkbox" id="overwriteKeysCheckbox" checked>
+          <span>Overwrite existing variables with imported values</span>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close="importModal">Cancel</button>
+        <button type="button" id="confirmImportBtn" class="btn btn-primary">Import Variables</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Bulk Export -->
+  <div id="exportModal" class="modal-overlay">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3>Export Environment Variables</h3>
+        <button class="modal-close-btn" data-close="exportModal">&times;</button>
+      </div>
+      <div class="export-format-tabs">
+        <button class="export-tab-btn active" data-format="env">.env Format</button>
+        <button class="export-tab-btn" data-format="json">JSON</button>
+        <button class="export-tab-btn" data-format="shell">Shell (export)</button>
+        <button class="export-tab-btn" data-format="docker">Dockerfile (ENV)</button>
+      </div>
+      <div class="export-preview-container">
+        <textarea id="exportPreviewText" rows="10" readonly></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close="exportModal">Close</button>
+        <button type="button" id="copyExportBtn" class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span>Copy to Clipboard</span>
+        </button>
+        <button type="button" id="downloadExportBtn" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Download</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Shell Hook Setup -->
+  <div id="shellModal" class="modal-overlay">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3>Direnv-like Shell Auto-switching Setup</h3>
+        <button class="modal-close-btn" data-close="shellModal">&times;</button>
+      </div>
+      <p class="modal-desc">Configure your shell once, and simplyenv will automatically load environment variables when entering directories and unload them when leaving!</p>
+      
+      <!-- Auto Install Card -->
+      <div class="shell-auto-card">
+        <div class="shell-auto-info">
+          <div class="shell-auto-title">
+            <strong>Automatic Configuration</strong>
+            <span id="shellInstallBadge" class="badge">Checking...</span>
+          </div>
+          <span id="shellProfilePathText" class="shell-profile-path">~/.bashrc</span>
+        </div>
+        <button type="button" id="autoInstallHookBtn" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          <span id="autoInstallBtnText">Install Automatically</span>
+        </button>
+      </div>
+
+      <div class="shell-divider">
+        <span>OR CONFIGURE MANUALLY</span>
+      </div>
+
+      <div class="shell-tabs">
+        <button class="shell-tab-btn active" data-shell="bash">Bash</button>
+        <button class="shell-tab-btn" data-shell="zsh">Zsh</button>
+        <button class="shell-tab-btn" data-shell="fish">Fish</button>
+        <button class="shell-tab-btn" data-shell="pwsh">PowerShell</button>
+      </div>
+
+      <div class="shell-snippet-box">
+        <pre><code id="shellSnippetCode">eval "$(simplyenv hook bash)"</code></pre>
+        <button id="copyShellHookBtn" class="btn btn-secondary btn-sm">Copy</button>
+      </div>
+      <div class="shell-instructions" id="shellInstructionsText">
+        Add the line above to your <code>~/.bashrc</code> file.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close="shellModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Interactive Tutorial / Onboarding Walkthrough -->
+  <div id="tourModal" class="modal-overlay">
+    <div class="modal-card tour-modal-card">
+      <div class="modal-header">
+        <div class="tour-header-meta">
+          <span class="brand-badge">QUICK TOUR</span>
+          <span class="tour-step-badge" id="tourStepBadge">Step 1 of 5</span>
+        </div>
+        <button class="modal-close-btn" data-close="tourModal">&times;</button>
+      </div>
+      <div class="tour-body" id="tourBody">
+        <!-- Rendered by JS -->
+      </div>
+      <div class="tour-footer">
+        <div class="tour-dots" id="tourDots">
+          <span class="tour-dot active"></span>
+          <span class="tour-dot"></span>
+          <span class="tour-dot"></span>
+          <span class="tour-dot"></span>
+          <span class="tour-dot"></span>
+        </div>
+        <div class="tour-nav-buttons">
+          <button id="tourPrevBtn" class="btn btn-secondary btn-sm" disabled>Back</button>
+          <button id="tourNextBtn" class="btn btn-primary btn-sm">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
