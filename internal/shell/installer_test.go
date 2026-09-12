@@ -84,3 +84,59 @@ func TestInstallAndUninstallHook(t *testing.T) {
 		t.Errorf("Original bashrc content was corrupted: %s", string(content))
 	}
 }
+
+func TestFormatUnsetProtectedVars(t *testing.T) {
+	keysToUnset := map[string]bool{
+		"PATH":          true,
+		"HOME":          true,
+		"USER":          true,
+		"SHELL":         true,
+		"CUSTOM_VAR":    true,
+		"ANOTHER_VAR":   true,
+		"MALICIOUS; rm": true,
+	}
+
+	result := FormatUnset(keysToUnset)
+
+	// Protected vars must NEVER be unset
+	if strings.Contains(result, "unset PATH") {
+		t.Errorf("FormatUnset emitted 'unset PATH', which corrupts shell!")
+	}
+	if strings.Contains(result, "unset HOME") {
+		t.Errorf("FormatUnset emitted 'unset HOME', which corrupts shell!")
+	}
+	if strings.Contains(result, "unset USER") {
+		t.Errorf("FormatUnset emitted 'unset USER', which corrupts shell!")
+	}
+	if strings.Contains(result, "unset SHELL") {
+		t.Errorf("FormatUnset emitted 'unset SHELL', which corrupts shell!")
+	}
+	if strings.Contains(result, "rm") {
+		t.Errorf("FormatUnset emitted invalid key containing 'rm'!")
+	}
+
+	// Legitimate custom keys should be unset
+	if !strings.Contains(result, "unset CUSTOM_VAR;") {
+		t.Errorf("FormatUnset failed to unset CUSTOM_VAR: %s", result)
+	}
+	if !strings.Contains(result, "unset ANOTHER_VAR;") {
+		t.Errorf("FormatUnset failed to unset ANOTHER_VAR: %s", result)
+	}
+}
+
+func TestFormatForShellKeyValidation(t *testing.T) {
+	envVars := map[string]string{
+		"VALID_KEY":         "123",
+		"INJECT; echo PWN":  "attack",
+		"KEY$(whoami)":      "attack",
+	}
+
+	result := FormatForShell(envVars)
+
+	if !strings.Contains(result, "export VALID_KEY=\"123\";") {
+		t.Errorf("FormatForShell missed VALID_KEY: %s", result)
+	}
+	if strings.Contains(result, "PWN") || strings.Contains(result, "whoami") {
+		t.Errorf("FormatForShell exported malicious keys: %s", result)
+	}
+}

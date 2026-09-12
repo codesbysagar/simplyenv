@@ -22,11 +22,33 @@ func FormatForShell(envVars map[string]string) string {
 	return builder.String()
 }
 
-// FormatUnset creates unset commands for the given keys.
+// ProtectedSystemVars lists shell environment variables that should never be unset
+// by simplyenv, preventing corruption or total failure of the user's active terminal session.
+var ProtectedSystemVars = map[string]bool{
+	"PATH":    true,
+	"HOME":    true,
+	"USER":    true,
+	"SHELL":   true,
+	"TERM":    true,
+	"PWD":     true,
+	"OLDPWD":  true,
+	"TMPDIR":  true,
+	"LOGNAME": true,
+	"SHLVL":   true,
+	"PS1":     true,
+	"PROMPT":  true,
+}
+
+// IsProtectedVar checks if a variable name is in the protected system variables list.
+func IsProtectedVar(key string) bool {
+	return ProtectedSystemVars[strings.ToUpper(key)]
+}
+
+// FormatUnset creates unset commands for the given keys, skipping invalid keys and protected system variables.
 func FormatUnset(keys map[string]bool) string {
 	var builder strings.Builder
 	for key := range keys {
-		if !core.IsValidKey(key) {
+		if !core.IsValidKey(key) || IsProtectedVar(key) {
 			continue
 		}
 		builder.WriteString(fmt.Sprintf("unset %s;\n", key))
