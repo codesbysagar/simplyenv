@@ -14,6 +14,7 @@ type Project struct {
 	Name       string `json:"name"`
 	ConfigFile string `json:"config_file"` // e.g. ".simplyenv"
 	HasConfig  bool   `json:"has_config"`
+	IsAllowed  bool   `json:"is_allowed"`
 	LastActive int64  `json:"last_active"`
 }
 
@@ -61,9 +62,12 @@ func LoadRegistry() (*Registry, error) {
 		if err == nil {
 			p.HasConfig = true
 			p.ConfigFile = filepath.Base(cfg)
+			allowed, _ := IsConfigAllowed(cfg)
+			p.IsAllowed = allowed
 		} else {
 			p.HasConfig = false
 			p.ConfigFile = ""
+			p.IsAllowed = false
 		}
 	}
 

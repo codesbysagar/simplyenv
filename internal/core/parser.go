@@ -92,7 +92,11 @@ func WriteEnvFile(filePath string, envVars map[string]string) error {
 		builder.WriteString(fmt.Sprintf("%s=\"%s\"\n", k, val))
 	}
 
-	return os.WriteFile(filePath, []byte(builder.String()), 0644)
+	if err := os.WriteFile(filePath, []byte(builder.String()), 0644); err != nil {
+		return err
+	}
+	_, _ = AllowConfig(filePath)
+	return nil
 }
 
 // SetEnvVar adds or updates an environment variable in the target file.

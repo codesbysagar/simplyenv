@@ -23,6 +23,9 @@ USAGE:
 
 COMMANDS:
   eval                 Evaluate directory environment and output shell export/unset (default)
+  allow [dir]          Trust and allow an environment configuration file (.simplyenv or .envrc)
+  deny [dir]           Revoke trust for an environment configuration file
+  status [dir]         Check trust status and configuration details for directory
   hook <shell>         Generate shell hook (bash, zsh, fish, pwsh)
   install-hook [shell] Automatically add simplyenv hook to your shell profile (.bashrc, .zshrc, etc.)
   uninstall-hook [sh]  Safely remove simplyenv hook from your shell profile
@@ -69,6 +72,15 @@ func main() {
 	switch command {
 	case "eval":
 		runEval()
+
+	case "allow":
+		runAllow(cmdArgs)
+
+	case "deny":
+		runDeny(cmdArgs)
+
+	case "status":
+		runStatus(cmdArgs)
 
 	case "hook":
 		runHook(cmdArgs)
@@ -131,8 +143,13 @@ func runEval() {
 	var newState core.State
 
 	if err == nil { // A config file was found
-		newEnvVars, _ = core.ParseEnvFile(configPath)
-		newState = core.BuildNewState(configPath, newEnvVars, prevState)
+		allowed, _ := core.IsConfigAllowed(configPath)
+		if !allowed {
+			fmt.Fprintf(os.Stderr, "[simplyenv] blocked: %s is not allowed.\n[simplyenv] Run 'simplyenv allow' to trust this environment.\n", configPath)
+		} else {
+			newEnvVars, _ = core.ParseEnvFile(configPath)
+			newState = core.BuildNewState(configPath, newEnvVars, prevState)
+		}
 	}
 
 	// Compare with prevState: variables no longer present in newEnvVars
@@ -395,4 +412,77 @@ func runExport(args []string) {
 	}
 
 	fmt.Print(output)
+}
+
+func runAllow(args []string) {
+	targetDir, _ := os.Getwd()
+	if len(args) > 0 {
+		targetDir = args[0]
+	}
+
+	configPath, err := core.FindConfig(targetDir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: No .simplyenv or .envrc found in %s\n", targetDir)
+		os.Exit(1)
+	}
+
+	hash, err := core.AllowConfig(configPath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error allowing config: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("✓ Trusted and allowed: %s\n", configPath)
+	if len(hash) >= 12 {
+		fmt.Printf("  Content hash: %s\n", hash[:12])
+	}
+	fmt.Println("  Environment variables will now be loaded automatically on cd.")
+}
+
+func runDeny(args []string) {
+	targetDir, _ := os.Getwd()
+	if len(args) > 0 {
+		targetDir = args[0]
+	}
+
+	configPath, err := core.FindConfig(targetDir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: No .simplyenv or .envrc found in %s\n", targetDir)
+		os.Exit(1)
+	}
+
+	if err := core.DenyConfig(configPath); err != nil {
+		fmt.Fprintf(os.Stderr, "Error denying config: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("✓ Revoked trust for: %s\n", configPath)
+	fmt.Println("  Environment variables will no longer be loaded automatically.")
+}
+
+func runStatus(args []string) {
+	targetDir, _ := os.Getwd()
+	if len(args) > 0 {
+		targetDir = args[0]
+	}
+
+	configPath, err := core.FindConfig(targetDir)
+	if err != nil {
+		fmt.Printf("Status for %s: No config found (.simplyenv or .envrc)\n", targetDir)
+		return
+	}
+
+	allowed, _ := core.IsConfigAllowed(configPath)
+	hash, _ := core.ComputeConfigHash(configPath)
+
+	fmt.Printf("Configuration File: %s\n", configPath)
+	if len(hash) >= 12 {
+		fmt.Printf("Content Hash:       %s\n", hash[:12])
+	}
+	if allowed {
+		fmt.Printf("Trust Status:       ✓ Allowed (trusted)\n")
+	} else {
+		fmt.Printf("Trust Status:       ⚠️  Blocked (untrusted)\n")
+		fmt.Printf("                    Run 'simplyenv allow' to trust this environment.\n")
+	}
 }

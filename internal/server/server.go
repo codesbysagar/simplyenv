@@ -86,6 +86,8 @@ func NewHandler() http.Handler {
 	mux.HandleFunc("/api/env", handleEnv)
 	mux.HandleFunc("/api/import", handleImport)
 	mux.HandleFunc("/api/export", handleExport)
+	mux.HandleFunc("/api/allow", handleAllow)
+	mux.HandleFunc("/api/deny", handleDeny)
 	mux.HandleFunc("/api/system/cwd", handleCwd)
 	mux.HandleFunc("/api/system/shell", handleShellInfo)
 	mux.HandleFunc("/api/system/install-hook", handleInstallHook)
@@ -236,9 +238,11 @@ func handleEnv(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		allowed, _ := core.IsConfigAllowed(configPath)
 		jsonResponse(w, http.StatusOK, map[string]interface{}{
 			"vars":        envVars,
 			"config_file": filepath.Base(configPath),
+			"is_allowed":  allowed,
 		})
 
 	case http.MethodPost:
@@ -448,6 +452,57 @@ func handleUninstallHook(w http.ResponseWriter, r *http.Request) {
 		"profile_path": profilePath,
 		"message":      fmt.Sprintf("Hook removed from %s", profilePath),
 	})
+}
+
+func handleAllow(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Path string `json:"path"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || strings.TrimSpace(req.Path) == "" {
+		errorResponse(w, http.StatusBadRequest, "Invalid directory path")
+		return
+	}
+
+	configPath := resolveConfigFile(req.Path)
+	hash, err := core.AllowConfig(configPath)
+	if err != nil {
+		errorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]interface{}{
+		"success": true,
+		"hash":    hash,
+		"path":    configPath,
+	})
+}
+
+func handleDeny(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Path string `json:"path"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || strings.TrimSpace(req.Path) == "" {
+		errorResponse(w, http.StatusBadRequest, "Invalid directory path")
+		return
+	}
+
+	configPath := resolveConfigFile(req.Path)
+	if err := core.DenyConfig(configPath); err != nil {
+		errorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	jsonResponse(w, http.StatusOK, map[string]bool{"success": true})
 }
 
 // OpenBrowser attempts to open the specified URL in the default web browser.
