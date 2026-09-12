@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -16,8 +17,68 @@ import (
 	"time"
 )
 
-// StartServer starts the simplyenv HTTP server and launches the UI in the default browser.
-func StartServer(port int, autoOpen bool) error {
+// isAllowedHost checks if the Host header points to localhost or 127.0.0.1
+func isAllowedHost(host string) bool {
+	h := host
+	if strings.Contains(h, ":") {
+		var err error
+		h, _, err = net.SplitHostPort(host)
+		if err != nil {
+			h = host
+		}
+	}
+	return h == "127.0.0.1" || h == "localhost" || h == "::1"
+}
+
+// isAllowedOrigin checks if the Origin or Referer header is from localhost or 127.0.0.1
+func isAllowedOrigin(origin string) bool {
+	if origin == "" {
+		return true // Direct requests or non-browser tools
+	}
+	u, err := url.Parse(origin)
+	if err != nil {
+		return false
+	}
+	return isAllowedHost(u.Host)
+}
+
+// SecurityMiddleware validates Host and Origin headers to prevent DNS rebinding and cross-origin CSRF/tampering.
+func SecurityMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// 1. Validate Host header to protect against DNS rebinding
+		if !isAllowedHost(r.Host) {
+			http.Error(w, "Forbidden: Invalid Host", http.StatusForbidden)
+			return
+		}
+
+		// 2. Validate Origin header if present
+		origin := r.Header.Get("Origin")
+		if origin != "" && !isAllowedOrigin(origin) {
+			http.Error(w, "Forbidden: Cross-Origin request denied", http.StatusForbidden)
+			return
+		}
+
+		// 3. For state-modifying requests (POST, DELETE, PUT), verify Sec-Fetch-Site and Referer
+		if r.Method != http.MethodGet && r.Method != http.MethodHead && r.Method != http.MethodOptions {
+			secFetchSite := r.Header.Get("Sec-Fetch-Site")
+			if secFetchSite == "cross-site" {
+				http.Error(w, "Forbidden: Cross-site request denied", http.StatusForbidden)
+				return
+			}
+
+			referer := r.Header.Get("Referer")
+			if referer != "" && !isAllowedOrigin(referer) {
+				http.Error(w, "Forbidden: Cross-Origin referer denied", http.StatusForbidden)
+				return
+			}
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+// NewHandler configures routes and wraps them with SecurityMiddleware.
+func NewHandler() http.Handler {
 	mux := http.NewServeMux()
 
 	// API Routes
@@ -33,6 +94,13 @@ func StartServer(port int, autoOpen bool) error {
 	// Static UI Assets (Embedded)
 	fileServer := http.FileServer(ui.GetFileSystem())
 	mux.Handle("/", fileServer)
+
+	return SecurityMiddleware(mux)
+}
+
+// StartServer starts the simplyenv HTTP server and launches the UI in the default browser.
+func StartServer(port int, autoOpen bool) error {
+	handler := NewHandler()
 
 	addr := fmt.Sprintf("127.0.0.1:%d", port)
 	listener, err := net.Listen("tcp", addr)
@@ -60,7 +128,7 @@ func StartServer(port int, autoOpen bool) error {
 		}()
 	}
 
-	return http.Serve(listener, mux)
+	return http.Serve(listener, handler)
 }
 
 func jsonResponse(w http.ResponseWriter, status int, data interface{}) {
