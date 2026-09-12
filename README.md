@@ -1,8 +1,8 @@
 # simplyenv
 
-The developer's environment manager & user-friendly direnv alternative.
+A lightweight, GUI-first directory environment manager in Go.
 
-`simplyenv` automates project setup by loading directory-specific environment variables when you enter a folder and unsetting them when you leave. Unlike `direnv`, `simplyenv` includes a **modern graphical UI (`simplyenv ui`)**, seamless **bulk import/export**, a **central project catalog**, and intuitive CLI commands.
+`simplyenv` automates project environment setup by loading directory-specific variables when you enter a folder and unsetting them when you leave. Built for developers who want the convenience of automatic directory environments without wrestling with raw dotfiles, `simplyenv` combines automated shell hooks with a **modern graphical dashboard (`simplyenv ui`)**, **secret masking/revealing**, **multi-format bulk import/export**, and intuitive CLI commands.
 
 <p align="center">
   <img width="800" alt="simplyenv" src="./internal/ui/assets/simplyenv-logo.png" />

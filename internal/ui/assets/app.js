@@ -656,7 +656,7 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "Welcome to simplyenv",
       icon: `<img src="/logo-icon.png" alt="simplyenv" class="tour-logo-icon">`,
-      desc: "simplyenv solves the pain of managing directory-specific environments. It brings the power of direnv together with a modern, visual dashboard and powerful developer tools.",
+      desc: "simplyenv solves the pain of managing directory-specific environments. It pairs automatic shell directory switching with a modern, visual dashboard and developer-friendly tooling.",
       features: [
         "Automatic environment loading as you cd into project folders",
         "Interactive UI to inspect, modify, and manage variables visually",

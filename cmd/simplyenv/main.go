@@ -16,7 +16,7 @@ import (
 const version = "1.0.0"
 
 func printHelp() {
-	helpText := `simplyenv - The developer's environment manager & modern direnv alternative
+	helpText := `simplyenv - Lightweight, GUI-first directory environment manager in Go
 
 USAGE:
   simplyenv [command] [options]

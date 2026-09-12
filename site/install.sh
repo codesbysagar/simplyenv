@@ -6,7 +6,7 @@ REPO="codesbysagar/simplyenv"
 BASE_URL="https://simplyenv.codesbysagar.com/downloads"
 
 echo "=================================================="
-echo "  🚀 Installing simplyenv — Modern direnv Alternative"
+echo "  🚀 Installing simplyenv — Visual Directory Environment Manager"
 echo "=================================================="
 
 OS="$(uname -s)"
