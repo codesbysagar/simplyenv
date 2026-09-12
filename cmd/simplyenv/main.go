@@ -142,9 +142,6 @@ func runEval() {
 		for key := range newEnvVars {
 			delete(varsToUnset, key)
 		}
-
-		// Auto-register project in registry
-		_, _ = core.RegisterProject(filepath.Dir(configPath))
 	}
 
 	// 3. Generate the shell commands
