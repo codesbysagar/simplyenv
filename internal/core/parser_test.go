@@ -3,6 +3,7 @@ package core
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -118,5 +119,55 @@ INVALID-NAME="bad"
 	// Setting invalid key should return an error
 	if err := SetEnvVar(filePath, "BAD; KEY", "val"); err == nil {
 		t.Errorf("Expected error setting invalid key, got nil")
+	}
+}
+
+func TestStateEncodingAndRestoration(t *testing.T) {
+	// Set ambient environment variable
+	t.Setenv("PORT", "3000")
+
+	// 1. Enter dir1: defines PORT=8080 and NEW_VAR=hello
+	dir1Vars := map[string]string{
+		"PORT":    "8080",
+		"NEW_VAR": "hello",
+	}
+	state1 := BuildNewState("/dir1", dir1Vars, State{})
+
+	if !state1.Restores["PORT"].HadOriginal || state1.Restores["PORT"].OrigValue != "3000" {
+		t.Errorf("Expected PORT to have HadOriginal=true and OrigValue='3000', got %+v", state1.Restores["PORT"])
+	}
+	if state1.Restores["NEW_VAR"].HadOriginal {
+		t.Errorf("Expected NEW_VAR to have HadOriginal=false, got %+v", state1.Restores["NEW_VAR"])
+	}
+
+	// 2. Encode and Decode
+	encoded := EncodeState(state1)
+	if !strings.HasPrefix(encoded, "v2:") {
+		t.Errorf("Expected encoded state to start with v2:, got %s", encoded)
+	}
+	decoded := DecodeState(encoded)
+	if decoded.ConfigPath != "/dir1" {
+		t.Errorf("Expected decoded path /dir1, got %s", decoded.ConfigPath)
+	}
+	if decoded.Restores["PORT"].OrigValue != "3000" {
+		t.Errorf("Expected decoded PORT restore '3000', got %s", decoded.Restores["PORT"].OrigValue)
+	}
+
+	// 3. Transition to dir2: defines PORT=9000 (preserves original PORT from state1)
+	dir2Vars := map[string]string{
+		"PORT": "9000",
+	}
+	state2 := BuildNewState("/dir2", dir2Vars, decoded)
+	if state2.Restores["PORT"].OrigValue != "3000" {
+		t.Errorf("Expected dir2 to preserve original PORT=3000, got %s", state2.Restores["PORT"].OrigValue)
+	}
+
+	// 4. Test legacy decode fallback
+	legacyState := DecodeState("fakehash:KEY1,KEY2")
+	if len(legacyState.Restores) != 2 {
+		t.Errorf("Expected 2 restores from legacy state, got %d", len(legacyState.Restores))
+	}
+	if legacyState.Restores["KEY1"].HadOriginal {
+		t.Errorf("Expected legacy key to default to HadOriginal=false")
 	}
 }

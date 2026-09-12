@@ -125,27 +125,36 @@ func runEval() {
 
 	// --- Calculate Differences ---
 	varsToUnset := make(map[string]bool)
-	for _, key := range prevState.VarKeys {
-		if key != "" {
+	varsToRestore := make(map[string]string)
+
+	var newEnvVars map[string]string
+	var newState core.State
+
+	if err == nil { // A config file was found
+		newEnvVars, _ = core.ParseEnvFile(configPath)
+		newState = core.BuildNewState(configPath, newEnvVars, prevState)
+	}
+
+	// Compare with prevState: variables no longer present in newEnvVars
+	for key, restore := range prevState.Restores {
+		if newEnvVars != nil {
+			if _, exists := newEnvVars[key]; exists {
+				continue // Will be overwritten by newEnvVars export
+			}
+		}
+
+		if restore.HadOriginal {
+			varsToRestore[key] = restore.OrigValue
+		} else {
 			varsToUnset[key] = true
 		}
 	}
 
-	var newEnvVars map[string]string
-	var newStateStr string
-
-	if err == nil { // A config file was found
-		newEnvVars, _ = core.ParseEnvFile(configPath)
-		newStateStr = core.EncodeState(configPath, newEnvVars)
-
-		// Don't unset variables that are present in the new environment
-		for key := range newEnvVars {
-			delete(varsToUnset, key)
-		}
-	}
+	newStateStr := core.EncodeState(newState)
 
 	// 3. Generate the shell commands
 	output := shell.FormatUnset(varsToUnset)
+	output += shell.FormatForShell(varsToRestore)
 	output += shell.FormatForShell(newEnvVars)
 	output += shell.FormatState(newStateStr)
 
