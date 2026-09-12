@@ -4,9 +4,18 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 )
+
+var validKeyRegex = regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*$`)
+
+// IsValidKey checks if the given string is a valid POSIX environment variable identifier.
+// Valid keys must start with an ASCII letter or underscore, followed by letters, digits, or underscores.
+func IsValidKey(key string) bool {
+	return validKeyRegex.MatchString(key)
+}
 
 // ParseEnvFile reads a file at the given path and parses it as a KEY=VALUE format.
 // It returns a map of environment variables or an error.
@@ -50,7 +59,7 @@ func ParseEnvFile(filePath string) (map[string]string, error) {
 			}
 		}
 
-		if key != "" {
+		if key != "" && IsValidKey(key) {
 			envVars[key] = value
 		}
 	}
@@ -67,7 +76,9 @@ func ParseEnvFile(filePath string) (map[string]string, error) {
 func WriteEnvFile(filePath string, envVars map[string]string) error {
 	keys := make([]string, 0, len(envVars))
 	for k := range envVars {
-		keys = append(keys, k)
+		if IsValidKey(k) {
+			keys = append(keys, k)
+		}
 	}
 	sort.Strings(keys)
 
@@ -86,6 +97,9 @@ func WriteEnvFile(filePath string, envVars map[string]string) error {
 
 // SetEnvVar adds or updates an environment variable in the target file.
 func SetEnvVar(filePath, key, value string) error {
+	if !IsValidKey(key) {
+		return fmt.Errorf("invalid environment variable key: %q (must match ^[a-zA-Z_][a-zA-Z0-9_]*$)", key)
+	}
 	vars, err := ParseEnvFile(filePath)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -100,6 +114,9 @@ func SetEnvVar(filePath, key, value string) error {
 
 // DeleteEnvVar removes an environment variable from the target file.
 func DeleteEnvVar(filePath, key string) error {
+	if !IsValidKey(key) {
+		return fmt.Errorf("invalid environment variable key: %q", key)
+	}
 	vars, err := ParseEnvFile(filePath)
 	if err != nil {
 		return err

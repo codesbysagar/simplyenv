@@ -62,3 +62,61 @@ EMPTY_LINE=
 		t.Errorf("Expected API_KEY to be deleted")
 	}
 }
+
+func TestIsValidKey(t *testing.T) {
+	valid := []string{"FOO", "foo", "VAR_1", "_SECRET", "A1_B2_C3", "a"}
+	for _, k := range valid {
+		if !IsValidKey(k) {
+			t.Errorf("Expected %q to be valid key", k)
+		}
+	}
+
+	invalid := []string{
+		"FOO; rm -rf /",
+		"KEY$(whoami)",
+		"KEY`id`",
+		"FOO BAR",
+		"FOO-BAR",
+		"1START_WITH_NUMBER",
+		"VAR.NAME",
+		"KEY:VAL",
+		"",
+	}
+	for _, k := range invalid {
+		if IsValidKey(k) {
+			t.Errorf("Expected %q to be invalid key", k)
+		}
+	}
+}
+
+func TestRejectMaliciousKeys(t *testing.T) {
+	tempDir := t.TempDir()
+	filePath := filepath.Join(tempDir, ".simplyenv")
+
+	maliciousContent := `
+VALID_KEY="safe_value"
+MALICIOUS; rm -rf /="bad"
+KEY$(id)="bad"
+INVALID-NAME="bad"
+`
+	if err := os.WriteFile(filePath, []byte(maliciousContent), 0644); err != nil {
+		t.Fatalf("Failed to write test file: %v", err)
+	}
+
+	vars, err := ParseEnvFile(filePath)
+	if err != nil {
+		t.Fatalf("ParseEnvFile failed: %v", err)
+	}
+
+	if len(vars) != 1 {
+		t.Errorf("Expected exactly 1 valid variable, got %d: %v", len(vars), vars)
+	}
+	if vars["VALID_KEY"] != "safe_value" {
+		t.Errorf("Expected VALID_KEY to be safe_value, got %q", vars["VALID_KEY"])
+	}
+
+	// Setting invalid key should return an error
+	if err := SetEnvVar(filePath, "BAD; KEY", "val"); err == nil {
+		t.Errorf("Expected error setting invalid key, got nil")
+	}
+}

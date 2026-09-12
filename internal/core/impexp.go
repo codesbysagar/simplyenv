@@ -21,7 +21,9 @@ func ParseRawImport(content string) (map[string]string, error) {
 		if err := json.Unmarshal([]byte(trimmed), &jsonMap); err == nil {
 			result := make(map[string]string)
 			for k, v := range jsonMap {
-				result[k] = fmt.Sprintf("%v", v)
+				if IsValidKey(k) {
+					result[k] = fmt.Sprintf("%v", v)
+				}
 			}
 			return result, nil
 		}
@@ -57,7 +59,7 @@ func ParseRawImport(content string) (map[string]string, error) {
 			}
 		}
 
-		if k != "" {
+		if k != "" && IsValidKey(k) {
 			result[k] = v
 		}
 	}

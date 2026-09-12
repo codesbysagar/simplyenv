@@ -2,6 +2,7 @@ package shell
 
 import (
 	"fmt"
+	"simplyenv/internal/core"
 	"strings"
 )
 
@@ -9,6 +10,9 @@ import (
 func FormatForShell(envVars map[string]string) string {
 	var builder strings.Builder
 	for key, value := range envVars {
+		if !core.IsValidKey(key) {
+			continue
+		}
 		escaped := strings.ReplaceAll(value, "\\", "\\\\")
 		escaped = strings.ReplaceAll(escaped, "\"", "\\\"")
 		escaped = strings.ReplaceAll(escaped, "$", "\\$")
@@ -22,6 +26,9 @@ func FormatForShell(envVars map[string]string) string {
 func FormatUnset(keys map[string]bool) string {
 	var builder strings.Builder
 	for key := range keys {
+		if !core.IsValidKey(key) {
+			continue
+		}
 		builder.WriteString(fmt.Sprintf("unset %s;\n", key))
 	}
 	return builder.String()
