@@ -49,7 +49,7 @@
 
       <nav class="nav-links">
         <a href="#features" class="nav-link">Features</a>
-        <a href="#comparison" class="nav-link">Why simplyenv</a>
+        <a href="#comparison" class="nav-link">Comparison</a>
         <a href="#docs" class="nav-link">Documentation</a>
         <a href="#community" class="nav-link">Community</a>
         <a href="https://github.com/codesbysagar/simplyenv" target="_blank" rel="noopener" class="nav-link nav-link-github">
@@ -119,7 +119,7 @@
       </a>
       <a href="#comparison" class="mobile-nav-link">
         <img src="/assets/logo-icon.png" alt="simplyenv" class="mobile-nav-link-icon" width="18" height="18">
-        <span>Why simplyenv</span>
+        <span>Comparison</span>
       </a>
       <a href="#docs" class="mobile-nav-link">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
@@ -364,22 +364,102 @@
     <div class="container">
       <div class="section-heading">
         <span class="pill-badge pill-purple">COMPARISON</span>
-        <h2>Why simplyenv?</h2>
-        <p>Traditional tools like direnv focus on CLI-only scripting. simplyenv is built for developers who want visual secret masking, rapid import/export, and zero-configuration directory switching without managing complex dotfiles.</p>
+        <h2>simplyenv & direnv: Side-by-Side</h2>
+        <p>Both tools automatically switch environment variables when you <code>cd</code>, but they are designed for
+          different workflows. direnv is a battle-tested shell-scripting power tool, while simplyenv is a visual,
+          GUI-first environment manager. Here is an honest, objective look at where each tool excels.</p>
       </div>
 
-      <!-- Desktop Comparison Table (Visible on screens > 768px, 100% fluid, no horizontal scroll) -->
+      <!-- Dual Cards: When to Choose Which -->
+      <div class="choose-which-grid">
+        <!-- Card: When to Choose direnv -->
+        <div class="choose-card choose-direnv-card">
+          <div class="choose-card-header">
+            <div class="choose-card-icon direnv-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+            </div>
+            <div>
+              <h3 class="choose-card-title">When to Choose direnv</h3>
+              <span class="choose-card-badge badge-direnv">Power Shell Scripting</span>
+            </div>
+          </div>
+          <ul class="choose-card-list">
+            <li>
+              <span class="choose-bullet check-direnv">✓</span>
+              <span><strong>Executable Shell Scripts:</strong> You need dynamic bash subshells, conditional logic, or token fetching inside <code>.envrc</code>.</span>
+            </li>
+            <li>
+              <span class="choose-bullet check-direnv">✓</span>
+              <span><strong>Nix & Flakes Integration:</strong> You rely on <code>use nix</code> or <code>use flake</code> for fully reproducible developer environments.</span>
+            </li>
+            <li>
+              <span class="choose-bullet check-direnv">✓</span>
+              <span><strong>Language Environment Layouts:</strong> You use built-in stdlib helpers like <code>layout python</code> (venv), <code>layout node</code>, and <code>PATH_add</code>.</span>
+            </li>
+            <li>
+              <span class="choose-bullet check-direnv">✓</span>
+              <span><strong>Terminal-Only Workflows:</strong> You prefer editing raw dotfiles in your editor and do not need a visual graphical dashboard.</span>
+            </li>
+          </ul>
+          <div class="choose-card-footer">
+            Best for advanced DevOps engineers and teams needing programmatic, scriptable shell environments.
+          </div>
+        </div>
+
+        <!-- Card: When to Choose simplyenv -->
+        <div class="choose-card choose-simplyenv-card">
+          <div class="choose-card-header">
+            <div class="choose-card-icon simplyenv-icon">
+              <img src="/assets/logo-icon.png" width="24" height="24" alt="simplyenv">
+            </div>
+            <div>
+              <h3 class="choose-card-title">When to Choose simplyenv</h3>
+              <span class="choose-card-badge badge-simplyenv">Visual & Zero-Friction</span>
+            </div>
+          </div>
+          <ul class="choose-card-list">
+            <li>
+              <span class="choose-bullet check-simplyenv">✓</span>
+              <span><strong>Modern Graphical Dashboard:</strong> You want an interactive web & desktop UI (<code>simplyenv ui</code>) to inspect, edit, and search variables.</span>
+            </li>
+            <li>
+              <span class="choose-bullet check-simplyenv">✓</span>
+              <span><strong>One-Click Secret Masking:</strong> Protect sensitive API keys and tokens on-screen while streaming, presenting, or pair programming.</span>
+            </li>
+            <li>
+              <span class="choose-bullet check-simplyenv">✓</span>
+              <span><strong>Multi-Format Bulk Export:</strong> Convert between <code>.env</code>, JSON, Docker <code>ENV</code>, and Shell exports with a single click.</span>
+            </li>
+            <li>
+              <span class="choose-bullet check-simplyenv">✓</span>
+              <span><strong>Central Project Catalog:</strong> Browse and organize environment variables across multiple repositories without navigating into each.</span>
+            </li>
+            <li>
+              <span class="choose-bullet check-simplyenv">✓</span>
+              <span><strong>1-Command Automated Hook:</strong> Zero-syntax shell hook installation for Bash, Zsh, Fish, and PowerShell.</span>
+            </li>
+          </ul>
+          <div class="choose-card-footer">
+            Best for application developers who want visual secret control and zero dotfile headaches.
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop Detailed Comparison Table -->
       <div class="comparison-desktop-table">
         <div class="comparison-table-wrapper">
           <table class="comparison-table">
             <thead>
               <tr>
-                <th class="col-feature">FEATURE</th>
+                <th class="col-feature">CAPABILITY / FEATURE</th>
                 <th class="col-simplyenv">
                   <div class="table-brand">
                     <img src="/assets/logo-icon.png" width="22" height="22" alt="logo">
                     <span>simplyenv</span>
-                    <span class="table-brand-pill">Modern</span>
+                    <span class="table-brand-pill">Visual</span>
                   </div>
                 </th>
                 <th class="col-direnv">direnv</th>
@@ -388,45 +468,60 @@
             <tbody>
               <tr>
                 <td><strong>Automatic Shell Directory Switching</strong></td>
-                <td class="col-simplyenv"><span class="badge-icon check">✓</span> Built-in (Diff engine)</td>
-                <td><span class="badge-icon check">✓</span> Built-in</td>
+                <td class="col-simplyenv"><span class="badge-icon check">✓</span> Built-in (Diff engine & restoration)</td>
+                <td><span class="badge-icon check">✓</span> Built-in (Standard hooks)</td>
+              </tr>
+              <tr>
+                <td><strong>Configuration Format</strong></td>
+                <td class="col-simplyenv"><strong>Declarative KEY=VALUE</strong> (.simplyenv)</td>
+                <td><strong>Executable Bash Script</strong> (.envrc)</td>
               </tr>
               <tr>
                 <td><strong>Graphical UI Dashboard</strong></td>
                 <td class="col-simplyenv"><span class="badge-icon check">✓</span> <strong>Yes (simplyenv ui)</strong></td>
-                <td><span class="badge-icon cross">✗</span> None (CLI only)</td>
+                <td><span class="badge-icon neutral">—</span> CLI only (No GUI)</td>
               </tr>
               <tr>
-                <td><strong>1-Click Automated Shell Hook Setup</strong></td>
-                <td class="col-simplyenv"><span class="badge-icon check">✓</span> <strong>Yes (1-click / 1-command)</strong></td>
-                <td><span class="badge-icon cross">✗</span> Manual copy-paste in dotfiles</td>
+                <td><strong>Secret Masking & Revealing</strong></td>
+                <td class="col-simplyenv"><span class="badge-icon check">✓</span> <strong>Yes (1-click toggle)</strong></td>
+                <td><span class="badge-icon neutral">—</span> Plaintext terminal view</td>
               </tr>
               <tr>
-                <td><strong>Mask & Reveal Sensitive Secrets</strong></td>
-                <td class="col-simplyenv"><span class="badge-icon check">✓</span> <strong>Yes (Live toggle)</strong></td>
-                <td><span class="badge-icon cross">✗</span> No (Plaintext files)</td>
+                <td><strong>Dynamic Shell Scripting & Subshells</strong></td>
+                <td class="col-simplyenv"><span class="badge-icon neutral">—</span> Static key-values (Declarative)</td>
+                <td><span class="badge-icon check">✓</span> <strong>Full bash scripting & subshells</strong></td>
+              </tr>
+              <tr>
+                <td><strong>Nix & Language Layouts (venv, PATH_add)</strong></td>
+                <td class="col-simplyenv"><span class="badge-icon neutral">—</span> Focused on environment variables</td>
+                <td><span class="badge-icon check">✓</span> <strong>First-class (use nix, layout)</strong></td>
               </tr>
               <tr>
                 <td><strong>Multi-Format Bulk Import & Export</strong></td>
                 <td class="col-simplyenv"><span class="badge-icon check">✓</span> <strong>.env, JSON, Shell, Docker</strong></td>
-                <td><span class="badge-icon cross">✗</span> No bulk formats</td>
+                <td><span class="badge-icon neutral">—</span> Requires external scripts</td>
               </tr>
               <tr>
-                <td><strong>Central Project Directory Catalog</strong></td>
+                <td><strong>Central Multi-Project Catalog</strong></td>
                 <td class="col-simplyenv"><span class="badge-icon check">✓</span> <strong>Yes (~/.config/simplyenv)</strong></td>
-                <td><span class="badge-icon cross">✗</span> Must cd into folders</td>
+                <td><span class="badge-icon neutral">—</span> Must cd into folders</td>
+              </tr>
+              <tr>
+                <td><strong>Cryptographic Trust Verification</strong></td>
+                <td class="col-simplyenv"><span class="badge-icon check">✓</span> <strong>simplyenv allow</strong> (SHA-256)</td>
+                <td><span class="badge-icon check">✓</span> <strong>direnv allow</strong> (Content hash)</td>
               </tr>
               <tr>
                 <td><strong>Single Standalone Binary</strong></td>
-                <td class="col-simplyenv"><span class="badge-icon check">✓</span> 100% Pure Go (~9MB)</td>
-                <td><span class="badge-icon check">✓</span> Go binary</td>
+                <td class="col-simplyenv"><span class="badge-icon check">✓</span> 100% Pure Go (~9MB with UI)</td>
+                <td><span class="badge-icon check">✓</span> 100% Pure Go</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- Mobile Comparison Cards (Visible on screens <= 768px, zero horizontal swipe) -->
+      <!-- Mobile Detailed Comparison Cards (Visible on screens <= 768px) -->
       <div class="comparison-mobile-cards">
         <div class="comparison-card">
           <div class="comparison-card-title">Automatic Shell Directory Switching</div>
@@ -440,7 +535,24 @@
             </div>
             <div class="comparison-item item-direnv">
               <div class="comparison-item-brand">direnv</div>
-              <div class="comparison-item-val"><span class="badge-icon check">✓</span> Built-in</div>
+              <div class="comparison-item-val"><span class="badge-icon check">✓</span> Built-in (Standard hooks)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison-card">
+          <div class="comparison-card-title">Configuration Format</div>
+          <div class="comparison-card-grid">
+            <div class="comparison-item item-simplyenv">
+              <div class="comparison-item-brand">
+                <img src="/assets/logo-icon.png" width="16" height="16" alt="simplyenv">
+                <span>simplyenv</span>
+              </div>
+              <div class="comparison-item-val">Declarative KEY=VALUE</div>
+            </div>
+            <div class="comparison-item item-direnv">
+              <div class="comparison-item-brand">direnv</div>
+              <div class="comparison-item-val">Executable Bash Script</div>
             </div>
           </div>
         </div>
@@ -457,41 +569,58 @@
             </div>
             <div class="comparison-item item-direnv">
               <div class="comparison-item-brand">direnv</div>
-              <div class="comparison-item-val"><span class="badge-icon cross">✗</span> None (CLI only)</div>
+              <div class="comparison-item-val"><span class="badge-icon neutral">—</span> CLI only</div>
             </div>
           </div>
         </div>
 
         <div class="comparison-card">
-          <div class="comparison-card-title">1-Click Automated Shell Hook Setup</div>
+          <div class="comparison-card-title">Secret Masking & Revealing</div>
           <div class="comparison-card-grid">
             <div class="comparison-item item-simplyenv">
               <div class="comparison-item-brand">
                 <img src="/assets/logo-icon.png" width="16" height="16" alt="simplyenv">
                 <span>simplyenv</span>
               </div>
-              <div class="comparison-item-val"><span class="badge-icon check">✓</span> <strong>Yes (1-click)</strong></div>
+              <div class="comparison-item-val"><span class="badge-icon check">✓</span> <strong>Live 1-click toggle</strong></div>
             </div>
             <div class="comparison-item item-direnv">
               <div class="comparison-item-brand">direnv</div>
-              <div class="comparison-item-val"><span class="badge-icon cross">✗</span> Manual copy-paste</div>
+              <div class="comparison-item-val"><span class="badge-icon neutral">—</span> Plaintext terminal view</div>
             </div>
           </div>
         </div>
 
         <div class="comparison-card">
-          <div class="comparison-card-title">Mask & Reveal Sensitive Secrets</div>
+          <div class="comparison-card-title">Dynamic Shell Scripting & Subshells</div>
           <div class="comparison-card-grid">
             <div class="comparison-item item-simplyenv">
               <div class="comparison-item-brand">
                 <img src="/assets/logo-icon.png" width="16" height="16" alt="simplyenv">
                 <span>simplyenv</span>
               </div>
-              <div class="comparison-item-val"><span class="badge-icon check">✓</span> <strong>Live toggle</strong></div>
+              <div class="comparison-item-val"><span class="badge-icon neutral">—</span> Static key-values</div>
             </div>
             <div class="comparison-item item-direnv">
               <div class="comparison-item-brand">direnv</div>
-              <div class="comparison-item-val"><span class="badge-icon cross">✗</span> Plaintext files</div>
+              <div class="comparison-item-val"><span class="badge-icon check">✓</span> <strong>Full bash scripting</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison-card">
+          <div class="comparison-card-title">Nix & Language Layouts (venv, PATH_add)</div>
+          <div class="comparison-card-grid">
+            <div class="comparison-item item-simplyenv">
+              <div class="comparison-item-brand">
+                <img src="/assets/logo-icon.png" width="16" height="16" alt="simplyenv">
+                <span>simplyenv</span>
+              </div>
+              <div class="comparison-item-val"><span class="badge-icon neutral">—</span> Env vars only</div>
+            </div>
+            <div class="comparison-item item-direnv">
+              <div class="comparison-item-brand">direnv</div>
+              <div class="comparison-item-val"><span class="badge-icon check">✓</span> <strong>use nix, layout</strong></div>
             </div>
           </div>
         </div>
@@ -508,13 +637,13 @@
             </div>
             <div class="comparison-item item-direnv">
               <div class="comparison-item-brand">direnv</div>
-              <div class="comparison-item-val"><span class="badge-icon cross">✗</span> No bulk formats</div>
+              <div class="comparison-item-val"><span class="badge-icon neutral">—</span> External scripts</div>
             </div>
           </div>
         </div>
 
         <div class="comparison-card">
-          <div class="comparison-card-title">Central Project Directory Catalog</div>
+          <div class="comparison-card-title">Central Multi-Project Catalog</div>
           <div class="comparison-card-grid">
             <div class="comparison-item item-simplyenv">
               <div class="comparison-item-brand">
@@ -525,7 +654,24 @@
             </div>
             <div class="comparison-item item-direnv">
               <div class="comparison-item-brand">direnv</div>
-              <div class="comparison-item-val"><span class="badge-icon cross">✗</span> Must cd into folders</div>
+              <div class="comparison-item-val"><span class="badge-icon neutral">—</span> Must cd into folders</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="comparison-card">
+          <div class="comparison-card-title">Cryptographic Trust Verification</div>
+          <div class="comparison-card-grid">
+            <div class="comparison-item item-simplyenv">
+              <div class="comparison-item-brand">
+                <img src="/assets/logo-icon.png" width="16" height="16" alt="simplyenv">
+                <span>simplyenv</span>
+              </div>
+              <div class="comparison-item-val"><span class="badge-icon check">✓</span> <strong>simplyenv allow</strong></div>
+            </div>
+            <div class="comparison-item item-direnv">
+              <div class="comparison-item-brand">direnv</div>
+              <div class="comparison-item-val"><span class="badge-icon check">✓</span> <strong>direnv allow</strong></div>
             </div>
           </div>
         </div>
