@@ -1,31 +1,66 @@
-// simplyenv Web UI Controller
+// simplyenv Web UI Controller — Project & Module Edition
 document.addEventListener('DOMContentLoaded', () => {
   // State
   let projects = [];
   let currentProject = null;
+  let currentModule = null;
+  let currentView = 'overview'; // 'overview' | 'module'
+  let expandedProjects = new Set();
   let currentEnvVars = {};
   let isMasked = true;
   let currentExportFormat = 'env';
 
-  // DOM Elements
+  // DOM Elements - Sidebar & Topbar
   const projectListEl = document.getElementById('projectList');
-  const currentProjectNameEl = document.getElementById('currentProjectName');
-  const currentProjectPathEl = document.getElementById('currentProjectPath');
-  const envTableBodyEl = document.getElementById('envTableBody');
-  const emptyStateEl = document.getElementById('emptyState');
+  const breadcrumbProjectBtn = document.getElementById('breadcrumbProjectBtn');
+  const breadcrumbProjectName = document.getElementById('breadcrumbProjectName');
+  const breadcrumbSep = document.getElementById('breadcrumbSep');
+  const moduleDropdownWrapper = document.getElementById('moduleDropdownWrapper');
+  const moduleSelectTrigger = document.getElementById('moduleSelectTrigger');
+  const moduleTriggerIcon = document.getElementById('moduleTriggerIcon');
+  const breadcrumbModuleName = document.getElementById('breadcrumbModuleName');
+  const moduleDropdownMenu = document.getElementById('moduleDropdownMenu');
+  const currentPathDisplay = document.getElementById('currentPathDisplay');
+  const searchEnvInput = document.getElementById('searchEnvInput');
+  const toastContainer = document.getElementById('toastContainer');
+  const addModuleTopBtn = document.getElementById('addModuleTopBtn');
+
+  // DOM Elements - Views
+  const projectOverviewView = document.getElementById('projectOverviewView');
+  const overviewProjectName = document.getElementById('overviewProjectName');
+  const overviewProjectPath = document.getElementById('overviewProjectPath');
+  const overviewModuleCount = document.getElementById('overviewModuleCount');
+  const overviewTotalVars = document.getElementById('overviewTotalVars');
+  const overviewAddModuleBtn = document.getElementById('overviewAddModuleBtn');
+  const modulesGrid = document.getElementById('modulesGrid');
+
+  const moduleEnvView = document.getElementById('moduleEnvView');
+  const backToOverviewBtn = document.getElementById('backToOverviewBtn');
+  const backProjectName = document.getElementById('backProjectName');
+  const activeModuleBadge = document.getElementById('activeModuleBadge');
   const varCountBadgeEl = document.getElementById('varCountBadge');
   const configFileBadgeEl = document.getElementById('configFileBadge');
-  const searchEnvInput = document.getElementById('searchEnvInput');
   const toggleMaskAllBtn = document.getElementById('toggleMaskAllBtn');
   const maskToggleText = document.getElementById('maskToggleText');
-  const toastContainer = document.getElementById('toastContainer');
+  const envTableBodyEl = document.getElementById('envTableBody');
+  const emptyStateEl = document.getElementById('emptyState');
+  const emptyStateTitle = document.getElementById('emptyStateTitle');
+  const emptyStateDesc = document.getElementById('emptyStateDesc');
 
   // Modals & Forms
   const varModal = document.getElementById('varModal');
   const varModalTitle = document.getElementById('varModalTitle');
+  const varModalModulePill = document.getElementById('varModalModulePill');
   const varForm = document.getElementById('varForm');
   const varKeyInput = document.getElementById('varKeyInput');
   const varValInput = document.getElementById('varValInput');
+
+  const moduleModal = document.getElementById('moduleModal');
+  const moduleForm = document.getElementById('moduleForm');
+  const moduleModalProjectName = document.getElementById('moduleModalProjectName');
+  const moduleNameInput = document.getElementById('moduleNameInput');
+  const moduleRelPathInput = document.getElementById('moduleRelPathInput');
+  const modulePathPreview = document.getElementById('modulePathPreview');
 
   const projectModal = document.getElementById('projectModal');
   const projectForm = document.getElementById('projectForm');
@@ -54,6 +89,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const themeToggleBtn = document.getElementById('themeToggleBtn');
   const themeMoonIcon = document.getElementById('themeMoonIcon');
   const themeSunIcon = document.getElementById('themeSunIcon');
+
+  // Active target helper
+  function getActiveTarget() {
+    if (currentModule) {
+      return {
+        path: currentModule.path,
+        name: currentModule.name,
+        isModule: true,
+        configFile: currentModule.config_file || '.simplyenv'
+      };
+    }
+    if (currentProject) {
+      return {
+        path: currentProject.path,
+        name: currentProject.name,
+        isModule: false,
+        configFile: currentProject.config_file || '.simplyenv'
+      };
+    }
+    return null;
+  }
 
   // Toast Helper
   function showToast(message, type = 'success') {
@@ -91,14 +147,35 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const data = await api('/api/projects');
       projects = data.projects || [];
-      renderProjects();
 
-      // If no project active yet, pick first or prompt
+      // Re-link currentProject & currentModule references if they exist
+      if (currentProject) {
+        const found = projects.find(p => p.path === currentProject.path);
+        currentProject = found || null;
+      }
+      if (currentProject && currentModule) {
+        const foundMod = (currentProject.modules || []).find(m => m.path === currentModule.path);
+        currentModule = foundMod || null;
+      }
+
+      // If no project active yet, default to first or auto-detect cwd
       if (!currentProject && projects.length > 0) {
-        selectProject(projects[0]);
+        const p = projects[0];
+        expandedProjects.add(p.path);
+        if (p.modules && p.modules.length > 0) {
+          selectModule(p, p.modules[0]);
+        } else {
+          selectProject(p, true);
+        }
       } else if (projects.length === 0) {
-        // Auto-detect current working directory
         detectCwd();
+      } else {
+        renderProjects();
+        if (currentView === 'overview' && currentProject) {
+          renderProjectOverview(currentProject);
+        } else if (currentView === 'module' && currentModule) {
+          await loadEnvironment();
+        }
       }
     } catch (err) {
       console.error('Failed to load projects:', err);
@@ -109,49 +186,361 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const data = await api('/api/system/cwd');
       if (data && data.path) {
-        await api('/api/projects', {
+        const newProj = await api('/api/projects', {
           method: 'POST',
           body: JSON.stringify({ path: data.path })
         });
-        loadProjects();
+        await loadProjects();
       }
     } catch (e) {
       console.error('Failed to detect cwd:', e);
     }
   }
 
+  // Render Projects & Modules Tree
   function renderProjects() {
     projectListEl.innerHTML = '';
-    projects.forEach(p => {
-      const item = document.createElement('div');
-      item.className = `project-item ${currentProject && currentProject.path === p.path ? 'active' : ''}`;
-      item.onclick = () => selectProject(p);
 
-      const dotClass = p.has_config ? '' : 'no-config';
-      item.innerHTML = `
-        <div class="project-item-info">
-          <span class="project-item-name">${escapeHtml(p.name)}</span>
-          <span class="project-item-path" title="${escapeHtml(p.path)}">${escapeHtml(p.path)}</span>
+    projects.forEach(p => {
+      const isExpanded = expandedProjects.has(p.path);
+      const isProjectActive = currentProject && currentProject.path === p.path && currentView === 'overview';
+      const modules = p.modules || [];
+
+      const groupEl = document.createElement('div');
+      groupEl.className = `project-group ${isExpanded ? 'expanded' : ''}`;
+
+      // Project Header row
+      const headerEl = document.createElement('div');
+      headerEl.className = `project-header ${isProjectActive ? 'active' : ''}`;
+
+      headerEl.innerHTML = `
+        <div class="project-header-left">
+          <svg class="project-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+          <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span class="project-title" title="${escapeHtml(p.path)}">${escapeHtml(p.name)}</span>
         </div>
-        <div class="project-status-dot ${dotClass}" title="${p.has_config ? 'Configured (' + p.config_file + ')' : 'No env file yet'}"></div>
+        <div class="project-header-right">
+          <span class="module-count-pill" title="${modules.length} microservices / modules">${modules.length}</span>
+          <div class="project-quick-actions">
+            <button class="btn-icon-xs add-mod-btn" title="Add Module to ${escapeHtml(p.name)}">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+            <button class="btn-icon-xs delete del-proj-btn" title="Untrack Project">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
       `;
-      projectListEl.appendChild(item);
+
+      // Header click interactions
+      headerEl.onclick = (e) => {
+        if (e.target.closest('.add-mod-btn')) {
+          e.stopPropagation();
+          openAddModuleModal(p);
+          return;
+        }
+        if (e.target.closest('.del-proj-btn')) {
+          e.stopPropagation();
+          deleteProject(p);
+          return;
+        }
+        if (e.target.closest('.project-chevron')) {
+          e.stopPropagation();
+          toggleProjectExpand(p.path);
+          return;
+        }
+
+        // Clicking anywhere else on project header opens Project Overview
+        selectProject(p, true);
+      };
+
+      // Modules List inside project
+      const moduleListEl = document.createElement('div');
+      moduleListEl.className = 'module-list';
+
+      modules.forEach(m => {
+        const isModuleActive = currentProject && currentProject.path === p.path &&
+                               currentModule && currentModule.path === m.path &&
+                               currentView === 'module';
+
+        const itemEl = document.createElement('div');
+        itemEl.className = `module-item ${isModuleActive ? 'active' : ''}`;
+
+        const isRoot = m.rel_path === '.';
+        const iconEmoji = isRoot ? '⚡' : '📦';
+        const displayName = isRoot ? (p.name + ' (root)') : m.name;
+        const varCount = m.var_count || 0;
+        const dotClass = m.has_config ? '' : 'no-config';
+
+        itemEl.innerHTML = `
+          <div class="module-item-left" title="${escapeHtml(m.path)}">
+            <span class="module-icon-emoji">${iconEmoji}</span>
+            <span class="module-name">${escapeHtml(displayName)}</span>
+          </div>
+          <div class="module-item-right">
+            <span class="module-vars-pill">${varCount} vars</span>
+            <button class="btn-icon-xs delete del-mod-btn" title="Remove Module">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <div class="module-status-dot ${dotClass}" title="${m.has_config ? 'Configured' : 'No config yet'}"></div>
+          </div>
+        `;
+
+        itemEl.onclick = (e) => {
+          if (e.target.closest('.del-mod-btn')) {
+            e.stopPropagation();
+            deleteModule(p, m);
+            return;
+          }
+          selectModule(p, m);
+        };
+
+        moduleListEl.appendChild(itemEl);
+      });
+
+      // "+ Add Module" link at bottom of module list
+      const addModLink = document.createElement('button');
+      addModLink.className = 'add-module-sidebar-btn';
+      addModLink.innerHTML = `
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>Add microservice module</span>
+      `;
+      addModLink.onclick = (e) => {
+        e.stopPropagation();
+        openAddModuleModal(p);
+      };
+      moduleListEl.appendChild(addModLink);
+
+      groupEl.appendChild(headerEl);
+      groupEl.appendChild(moduleListEl);
+      projectListEl.appendChild(groupEl);
     });
   }
 
-  async function selectProject(project) {
+  function toggleProjectExpand(projectPath) {
+    if (expandedProjects.has(projectPath)) {
+      expandedProjects.delete(projectPath);
+    } else {
+      expandedProjects.add(projectPath);
+    }
+    renderProjects();
+  }
+
+  // Select Project & Show Overview Dashboard
+  function selectProject(project, openOverview = true) {
     currentProject = project;
-    currentProjectNameEl.textContent = project.name;
-    currentProjectPathEl.textContent = project.path;
-    configFileBadgeEl.textContent = project.config_file || '.simplyenv';
+    expandedProjects.add(project.path);
+
+    if (openOverview || !project.modules || project.modules.length === 0) {
+      currentView = 'overview';
+      currentModule = null;
+      renderProjectOverview(project);
+    } else {
+      selectModule(project, project.modules[0]);
+    }
+    renderProjects();
+  }
+
+  function renderProjectOverview(project) {
+    currentView = 'overview';
+    projectOverviewView.classList.remove('hidden');
+    moduleEnvView.classList.add('hidden');
+
+    // Breadcrumb updates
+    breadcrumbProjectName.textContent = project.name;
+    breadcrumbSep.classList.add('hidden');
+    moduleDropdownWrapper.classList.add('hidden');
+    currentPathDisplay.textContent = project.path;
+
+    // Overview Hero Card
+    overviewProjectName.textContent = project.name;
+    overviewProjectPath.textContent = project.path;
+
+    const modules = project.modules || [];
+    overviewModuleCount.textContent = modules.length;
+
+    let totalVars = 0;
+    modules.forEach(m => { totalVars += (m.var_count || 0); });
+    overviewTotalVars.textContent = totalVars;
+
+    // Render Modules Grid
+    modulesGrid.innerHTML = '';
+
+    modules.forEach(m => {
+      const isRoot = m.rel_path === '.';
+      const iconEmoji = isRoot ? '⚡' : '📦';
+      const displayName = isRoot ? (project.name + ' (root)') : m.name;
+      const relPathText = isRoot ? './ (root)' : `./${m.rel_path}`;
+
+      const card = document.createElement('div');
+      card.className = 'module-card';
+      card.innerHTML = `
+        <div class="module-card-header">
+          <div class="module-card-title-group">
+            <span class="module-card-icon">${iconEmoji}</span>
+            <div>
+              <h4 class="module-card-name" title="${escapeHtml(m.name)}">${escapeHtml(displayName)}</h4>
+              <span class="module-card-relpath" title="${escapeHtml(m.path)}">${escapeHtml(relPathText)}</span>
+            </div>
+          </div>
+          <button class="btn-icon-xs delete card-del-btn" title="Remove Module">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="module-card-meta">
+          <span class="badge ${m.has_config ? 'badge-module' : 'badge-outline'}">${m.var_count || 0} variables</span>
+          <span class="badge badge-outline">${escapeHtml(m.config_file || '.simplyenv')}</span>
+        </div>
+        <div class="module-card-footer">
+          <button class="btn btn-primary btn-sm manage-mod-btn">Manage Environment</button>
+          <button class="btn btn-secondary btn-sm export-mod-btn" title="Export this module">Export</button>
+        </div>
+      `;
+
+      card.querySelector('.manage-mod-btn').onclick = () => selectModule(project, m);
+      card.querySelector('.export-mod-btn').onclick = (e) => {
+        e.stopPropagation();
+        currentModule = m;
+        openExportModal();
+      };
+      card.querySelector('.card-del-btn').onclick = (e) => {
+        e.stopPropagation();
+        deleteModule(project, m);
+      };
+
+      modulesGrid.appendChild(card);
+    });
+
+    // Add Module Dashed Card
+    const addCard = document.createElement('div');
+    addCard.className = 'module-card dashed-add';
+    addCard.innerHTML = `
+      <div class="add-card-content">
+        <div class="add-card-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        </div>
+        <span class="add-card-text">Add Microservice Module</span>
+        <span class="add-card-sub">Group env tracking inside ${escapeHtml(project.name)}</span>
+      </div>
+    `;
+    addCard.onclick = () => openAddModuleModal(project);
+    modulesGrid.appendChild(addCard);
+  }
+
+  // Select Specific Module & Open Environment Editor
+  async function selectModule(project, module) {
+    currentProject = project;
+    currentModule = module;
+    currentView = 'module';
+    expandedProjects.add(project.path);
+
+    projectOverviewView.classList.add('hidden');
+    moduleEnvView.classList.remove('hidden');
+
+    // Breadcrumb updates
+    breadcrumbProjectName.textContent = project.name;
+    breadcrumbSep.classList.remove('hidden');
+    moduleDropdownWrapper.classList.remove('hidden');
+
+    const isRoot = module.rel_path === '.';
+    breadcrumbModuleName.textContent = module.name;
+    moduleTriggerIcon.textContent = isRoot ? '⚡' : '📦';
+    currentPathDisplay.textContent = module.path;
+
+    // View Badges
+    activeModuleBadge.textContent = `${isRoot ? '⚡' : '📦'} ${module.name}`;
+    configFileBadgeEl.textContent = module.config_file || '.simplyenv';
+    backProjectName.textContent = project.name;
+
+    renderModuleDropdownMenu(project);
     renderProjects();
     await loadEnvironment();
   }
 
+  function renderModuleDropdownMenu(project) {
+    moduleDropdownMenu.innerHTML = '';
+    const modules = project.modules || [];
+
+    modules.forEach(m => {
+      const btn = document.createElement('button');
+      btn.className = `module-dropdown-item ${currentModule && currentModule.path === m.path ? 'active' : ''}`;
+      const isRoot = m.rel_path === '.';
+      btn.innerHTML = `
+        <span>${isRoot ? '⚡' : '📦'} ${escapeHtml(m.name)}</span>
+        <span class="module-vars-pill">${m.var_count || 0} vars</span>
+      `;
+      btn.onclick = () => {
+        moduleDropdownMenu.classList.add('hidden');
+        selectModule(project, m);
+      };
+      moduleDropdownMenu.appendChild(btn);
+    });
+
+    const addBtn = document.createElement('button');
+    addBtn.className = 'module-dropdown-item';
+    addBtn.style.color = 'var(--primary)';
+    addBtn.style.fontWeight = '600';
+    addBtn.innerHTML = `<span>+ Add new module</span>`;
+    addBtn.onclick = () => {
+      moduleDropdownMenu.classList.add('hidden');
+      openAddModuleModal(project);
+    };
+    moduleDropdownMenu.appendChild(addBtn);
+  }
+
+  // Toggle Module Dropdown
+  moduleSelectTrigger.onclick = (e) => {
+    e.stopPropagation();
+    moduleDropdownMenu.classList.toggle('hidden');
+  };
+
+  document.addEventListener('click', (e) => {
+    if (!moduleDropdownWrapper.contains(e.target)) {
+      moduleDropdownMenu.classList.add('hidden');
+    }
+  });
+
+  breadcrumbProjectBtn.onclick = () => {
+    if (currentProject) {
+      selectProject(currentProject, true);
+    }
+  };
+
+  backToOverviewBtn.onclick = () => {
+    if (currentProject) {
+      selectProject(currentProject, true);
+    }
+  };
+
+  // Load Environment Variables for Active Module or Project
   async function loadEnvironment() {
-    if (!currentProject) return;
+    const target = getActiveTarget();
+    if (!target) return;
+
     try {
-      const data = await api(`/api/env?path=${encodeURIComponent(currentProject.path)}`);
+      const data = await api(`/api/env?path=${encodeURIComponent(target.path)}`);
       currentEnvVars = data.vars || {};
       configFileBadgeEl.textContent = data.config_file || '.simplyenv';
       renderEnvTable();
@@ -167,6 +556,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     varCountBadgeEl.textContent = `${keys.length} ${keys.length === 1 ? 'variable' : 'variables'}`;
     envTableBodyEl.innerHTML = '';
+
+    const target = getActiveTarget();
+    if (target) {
+      emptyStateTitle.textContent = `No Variables in ${target.name}`;
+      emptyStateDesc.textContent = `Add environment variables for ${target.name}, or bulk import from an existing .env file.`;
+    }
 
     if (keys.length === 0) {
       emptyStateEl.classList.add('active');
@@ -214,7 +609,7 @@ document.addEventListener('DOMContentLoaded', () => {
       envTableBodyEl.appendChild(tr);
     });
 
-    // Attach row events
+    // Row event handlers
     envTableBodyEl.querySelectorAll('[data-copy]').forEach(btn => {
       btn.onclick = () => {
         copyToClipboard(btn.getAttribute('data-copy'));
@@ -251,12 +646,18 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   });
 
-  // Add Variable Modal
+  // Add / Edit Variable Modal
   document.getElementById('addVarBtn').onclick = () => openAddVarModal();
   document.getElementById('emptyAddBtn').onclick = () => openAddVarModal();
 
   function openAddVarModal() {
-    varModalTitle.textContent = 'Add Environment Variable';
+    const target = getActiveTarget();
+    if (!target) {
+      showToast('Please select a project or module first', 'error');
+      return;
+    }
+    varModalTitle.textContent = `Add Variable to ${target.name}`;
+    varModalModulePill.textContent = target.name;
     varKeyInput.value = '';
     varKeyInput.readOnly = false;
     varValInput.value = '';
@@ -265,7 +666,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function openEditVarModal(key) {
+    const target = getActiveTarget();
     varModalTitle.textContent = `Edit ${key}`;
+    varModalModulePill.textContent = target ? target.name : 'Active';
     varKeyInput.value = key;
     varKeyInput.readOnly = true;
     varValInput.value = currentEnvVars[key] || '';
@@ -275,8 +678,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   varForm.onsubmit = async (e) => {
     e.preventDefault();
-    if (!currentProject) {
-      showToast('Please select a project directory first', 'error');
+    const target = getActiveTarget();
+    if (!target) {
+      showToast('Please select a module first', 'error');
       return;
     }
     const key = varKeyInput.value.trim();
@@ -286,7 +690,7 @@ document.addEventListener('DOMContentLoaded', () => {
       await api('/api/env', {
         method: 'POST',
         body: JSON.stringify({
-          path: currentProject.path,
+          path: target.path,
           key: key,
           value: value
         })
@@ -301,23 +705,127 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   async function deleteVar(key) {
+    const target = getActiveTarget();
+    if (!target) return;
     if (!confirm(`Are you sure you want to remove ${key}?`)) return;
+
     try {
       await api('/api/env', {
         method: 'DELETE',
         body: JSON.stringify({
-          path: currentProject.path,
+          path: target.path,
           key: key
         })
       });
       showToast(`Removed ${key}`);
       await loadEnvironment();
+      await loadProjects();
     } catch (err) {
       console.error(err);
     }
   }
 
-  // Add Project Modal
+  // ==========================================
+  // Add Microservice / Module Modal Handlers
+  // ==========================================
+  function openAddModuleModal(project) {
+    const proj = project || currentProject;
+    if (!proj) {
+      showToast('Select or create a project first', 'error');
+      return;
+    }
+    moduleModalProjectName.textContent = proj.name;
+    moduleNameInput.value = '';
+    moduleRelPathInput.value = '';
+    updateModulePathPreview(proj);
+    moduleModal.classList.add('active');
+    moduleNameInput.focus();
+  }
+
+  function updateModulePathPreview(proj) {
+    const p = proj || currentProject;
+    if (!p) return;
+    const name = moduleNameInput.value.trim();
+    const rel = moduleRelPathInput.value.trim() || name || 'microservice-name';
+    modulePathPreview.textContent = `${p.path}/${rel}/.simplyenv`;
+  }
+
+  moduleNameInput.addEventListener('input', () => {
+    if (!moduleRelPathInput.dataset.userEdited) {
+      moduleRelPathInput.value = moduleNameInput.value.toLowerCase().replace(/[^a-z0-9-_]/g, '-');
+    }
+    updateModulePathPreview();
+  });
+
+  moduleRelPathInput.addEventListener('input', () => {
+    moduleRelPathInput.dataset.userEdited = 'true';
+    updateModulePathPreview();
+  });
+
+  // Preset Chips
+  document.querySelectorAll('.preset-chip').forEach(chip => {
+    chip.onclick = () => {
+      const preset = chip.getAttribute('data-preset');
+      moduleNameInput.value = preset;
+      moduleRelPathInput.value = preset;
+      delete moduleRelPathInput.dataset.userEdited;
+      updateModulePathPreview();
+      moduleNameInput.focus();
+    };
+  });
+
+  moduleForm.onsubmit = async (e) => {
+    e.preventDefault();
+    if (!currentProject) {
+      showToast('No active project', 'error');
+      return;
+    }
+    const name = moduleNameInput.value.trim();
+    const relPath = moduleRelPathInput.value.trim() || name;
+
+    try {
+      const newMod = await api('/api/modules', {
+        method: 'POST',
+        body: JSON.stringify({
+          project_path: currentProject.path,
+          name: name,
+          rel_path: relPath
+        })
+      });
+      showToast(`Microservice module "${name}" created!`);
+      moduleModal.classList.remove('active');
+      await loadProjects();
+      selectModule(currentProject, newMod);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  overviewAddModuleBtn.onclick = () => openAddModuleModal(currentProject);
+  addModuleTopBtn.onclick = () => openAddModuleModal(currentProject);
+
+  async function deleteModule(project, module) {
+    if (!confirm(`Are you sure you want to stop tracking microservice "${module.name}"?`)) return;
+
+    try {
+      await api('/api/modules', {
+        method: 'DELETE',
+        body: JSON.stringify({
+          project_path: project.path,
+          module_path: module.path
+        })
+      });
+      showToast(`Module "${module.name}" removed from project`);
+      await loadProjects();
+      selectProject(project, true);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // ==========================================
+  // Track Project Modal Handlers
+  // ==========================================
   document.getElementById('addProjectBtn').onclick = () => {
     projectPathInput.value = '';
     projectModal.classList.add('active');
@@ -345,20 +853,44 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         body: JSON.stringify({ path: pPath })
       });
-      showToast('Directory tracked successfully!');
+      showToast('Project tracked successfully!');
       projectModal.classList.remove('active');
       await loadProjects();
-      selectProject(newProj);
+      selectProject(newProj, true);
     } catch (err) {
       console.error(err);
     }
   };
 
+  async function deleteProject(project) {
+    if (!confirm(`Are you sure you want to untrack project "${project.name}"?`)) return;
+
+    try {
+      await api('/api/projects', {
+        method: 'DELETE',
+        body: JSON.stringify({ path: project.path })
+      });
+      showToast(`Untracked project "${project.name}"`);
+      currentProject = null;
+      currentModule = null;
+      await loadProjects();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // ==========================================
   // Bulk Import Modal
+  // ==========================================
   document.getElementById('importBtn').onclick = () => openImportModal();
   document.getElementById('emptyImportBtn').onclick = () => openImportModal();
 
   function openImportModal() {
+    const target = getActiveTarget();
+    if (!target) {
+      showToast('Select a module or project first', 'error');
+      return;
+    }
     importTextInput.value = '';
     importModal.classList.add('active');
   }
@@ -419,8 +951,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   confirmImportBtn.onclick = async () => {
-    if (!currentProject) {
-      showToast('Select a directory first', 'error');
+    const target = getActiveTarget();
+    if (!target) {
+      showToast('Select a module or project first', 'error');
       return;
     }
     const content = importTextInput.value.trim();
@@ -433,12 +966,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await api('/api/import', {
         method: 'POST',
         body: JSON.stringify({
-          path: currentProject.path,
+          path: target.path,
           content: content,
           overwrite: overwriteKeysCheckbox.checked
         })
       });
-      showToast(`Successfully imported ${res.count} variables!`);
+      showToast(`Successfully imported ${res.count} variables into ${target.name}!`);
       importModal.classList.remove('active');
       await loadEnvironment();
       await loadProjects();
@@ -447,12 +980,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // ==========================================
   // Bulk Export Modal
+  // ==========================================
   document.getElementById('exportBtn').onclick = () => openExportModal();
 
   async function openExportModal() {
-    if (!currentProject) {
-      showToast('Select a directory first', 'error');
+    const target = getActiveTarget();
+    if (!target) {
+      showToast('Select a module or project first', 'error');
       return;
     }
     exportModal.classList.add('active');
@@ -469,8 +1005,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   async function updateExportPreview() {
+    const target = getActiveTarget();
+    if (!target) return;
     try {
-      const res = await api(`/api/export?path=${encodeURIComponent(currentProject.path)}&format=${currentExportFormat}`);
+      const res = await api(`/api/export?path=${encodeURIComponent(target.path)}&format=${currentExportFormat}`);
       exportPreviewText.value = res.content || '';
     } catch (err) {
       console.error(err);
@@ -483,6 +1021,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   downloadExportBtn.onclick = () => {
+    const target = getActiveTarget();
     const blob = new Blob([exportPreviewText.value], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -491,13 +1030,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentExportFormat === 'json') ext = '.json';
     if (currentExportFormat === 'shell') ext = '.sh';
     if (currentExportFormat === 'docker') ext = '.dockerfile';
-    a.download = `${currentProject.name}_env${ext}`;
+    const targetName = target ? target.name.replace(/[^a-zA-Z0-9_-]/g, '_') : 'env';
+    a.download = `${targetName}_env${ext}`;
     a.click();
     URL.revokeObjectURL(url);
     showToast('File downloaded!');
   };
 
+  // ==========================================
   // Shell Setup Modal & Auto-Install
+  // ==========================================
   let activeShellTab = 'bash';
   let isHookInstalledCurrently = false;
 
@@ -591,7 +1133,9 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Shell hook copied!');
   };
 
-  // Theme Management (Light by default)
+  // ==========================================
+  // Theme Management
+  // ==========================================
   function initTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
     updateThemeIcons(currentTheme);
@@ -642,7 +1186,9 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/'/g, '&#039;');
   }
 
+  // ==========================================
   // Interactive Tour Guide
+  // ==========================================
   let currentTourStep = 0;
   const tourModal = document.getElementById('tourModal');
   const tourBody = document.getElementById('tourBody');
@@ -656,21 +1202,22 @@ document.addEventListener('DOMContentLoaded', () => {
     {
       title: "Welcome to simplyenv",
       icon: `<img src="/logo-icon.png" alt="simplyenv" class="tour-logo-icon">`,
-      desc: "simplyenv solves the pain of managing directory-specific environments. It pairs automatic shell directory switching with a modern, visual dashboard and developer-friendly tooling.",
+      desc: "simplyenv solves the pain of managing directory-specific environments. It pairs automatic shell directory switching with a modern, visual dashboard and microservice-ready project grouping.",
       features: [
         "Automatic environment loading as you cd into project folders",
+        "Project & Microservice Module grouping for monorepos & microservices",
         "Interactive UI to inspect, modify, and manage variables visually",
         "100% standalone single binary with zero external dependencies"
       ]
     },
     {
-      title: "1. Projects Catalog (Sidebar)",
+      title: "1. Projects & Microservices Catalog",
       icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`,
-      desc: "The left sidebar acts as your central command center. You can view all tracked repositories and directories without having to navigate to them in your terminal.",
+      desc: "Organize projects with multiple services cleanly! Group microservice-A, microservice-B, or frontend/backend under a single parent project.",
       features: [
-        "Green indicator shows whether a .simplyenv configuration exists",
-        "Click the '+' button to track any directory on your computer",
-        "Switch projects instantly to inspect and configure their variables"
+        "Expandable project accordion displays all nested microservices",
+        "Automatic discovery of any subdirectories with .simplyenv",
+        "Click '+ Module' to create a new microservice environment in seconds"
       ]
     },
     {
@@ -701,7 +1248,7 @@ document.addEventListener('DOMContentLoaded', () => {
       features: [
         "Click 'Shell Hook Setup' in the sidebar footer",
         "Press 'Install Automatically' to configure ~/.bashrc, ~/.zshrc, or Fish",
-        "Now whenever you cd into a directory, variables load effortlessly!"
+        "Now whenever you cd into a microservice directory, its variables load effortlessly!"
       ]
     }
   ];
@@ -744,7 +1291,6 @@ document.addEventListener('DOMContentLoaded', () => {
       tourDots.appendChild(dot);
     });
 
-    // Button states
     tourPrevBtn.disabled = currentTourStep === 0;
     if (currentTourStep === tourSteps.length - 1) {
       tourNextBtn.textContent = 'Finish Tour';
@@ -774,6 +1320,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (openTourBtn) {
     openTourBtn.onclick = () => openTourModal(0);
   }
+
+  // Keyboard shortcut: Ctrl+F / Cmd+F to focus search filter
+  window.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+      if (currentView === 'module') {
+        e.preventDefault();
+        searchEnvInput.focus();
+        searchEnvInput.select();
+      }
+    }
+  });
 
   // Initial Boot
   initTheme();

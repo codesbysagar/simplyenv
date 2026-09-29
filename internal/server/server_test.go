@@ -1,8 +1,11 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -111,3 +114,67 @@ func TestSecurityMiddlewareCrossSiteStateModification(t *testing.T) {
 		t.Errorf("Expected 403 Forbidden for malicious Referer, got %d", rec2.Code)
 	}
 }
+
+func TestProjectsAndModulesAPI(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "simplyenv-api-test")
+	if err != nil {
+		t.Fatalf("Failed to create temp dir: %v", err)
+	}
+	defer os.RemoveAll(tempDir)
+
+	origHome := os.Getenv("HOME")
+	os.Setenv("HOME", tempDir)
+	defer os.Setenv("HOME", origHome)
+
+	handler := NewHandler()
+
+	projDir := filepath.Join(tempDir, "sample-project")
+	_ = os.MkdirAll(projDir, 0755)
+
+	// 1. Register project via POST /api/projects
+	body := strings.NewReader(fmt.Sprintf(`{"path":%q}`, projDir))
+	req := httptest.NewRequest(http.MethodPost, "/api/projects", body)
+	req.Host = "localhost:8085"
+	rec := httptest.NewRecorder()
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("Expected 200 from POST /api/projects, got %d: %s", rec.Code, rec.Body.String())
+	}
+
+	// 2. Add module via POST /api/modules
+	modBody := strings.NewReader(fmt.Sprintf(`{"project_path":%q,"name":"microservice-A","rel_path":"microservice-A"}`, projDir))
+	modReq := httptest.NewRequest(http.MethodPost, "/api/modules", modBody)
+	modReq.Host = "localhost:8085"
+	modRec := httptest.NewRecorder()
+	handler.ServeHTTP(modRec, modReq)
+
+	if modRec.Code != http.StatusOK {
+		t.Fatalf("Expected 200 from POST /api/modules, got %d: %s", modRec.Code, modRec.Body.String())
+	}
+
+	// 3. Get projects via GET /api/projects and verify module is present
+	listReq := httptest.NewRequest(http.MethodGet, "/api/projects", nil)
+	listReq.Host = "localhost:8085"
+	listRec := httptest.NewRecorder()
+	handler.ServeHTTP(listRec, listReq)
+
+	if listRec.Code != http.StatusOK {
+		t.Fatalf("Expected 200 from GET /api/projects, got %d", listRec.Code)
+	}
+	if !strings.Contains(listRec.Body.String(), "microservice-A") {
+		t.Errorf("Expected response to contain microservice-A, got %s", listRec.Body.String())
+	}
+
+	// 4. Delete module via DELETE /api/modules
+	delBody := strings.NewReader(fmt.Sprintf(`{"project_path":%q,"module_path":%q}`, projDir, filepath.Join(projDir, "microservice-A")))
+	delReq := httptest.NewRequest(http.MethodDelete, "/api/modules", delBody)
+	delReq.Host = "localhost:8085"
+	delRec := httptest.NewRecorder()
+	handler.ServeHTTP(delRec, delReq)
+
+	if delRec.Code != http.StatusOK {
+		t.Fatalf("Expected 200 from DELETE /api/modules, got %d: %s", delRec.Code, delRec.Body.String())
+	}
+}
+

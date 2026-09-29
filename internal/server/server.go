@@ -83,6 +83,7 @@ func NewHandler() http.Handler {
 
 	// API Routes
 	mux.HandleFunc("/api/projects", handleProjects)
+	mux.HandleFunc("/api/modules", handleModules)
 	mux.HandleFunc("/api/env", handleEnv)
 	mux.HandleFunc("/api/import", handleImport)
 	mux.HandleFunc("/api/export", handleExport)
@@ -176,8 +177,8 @@ func handleProjects(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// If no config file exists yet, create an initial empty .simplyenv
-		if !proj.HasConfig {
+		// If no config file exists and no modules discovered, create an initial empty .simplyenv in root
+		if !proj.HasConfig && len(proj.Modules) == 0 {
 			targetFile := filepath.Join(req.Path, ".simplyenv")
 			_ = core.WriteEnvFile(targetFile, map[string]string{})
 			proj.HasConfig = true
@@ -195,6 +196,47 @@ func handleProjects(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if err := core.UnregisterProject(req.Path); err != nil {
+			errorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		jsonResponse(w, http.StatusOK, map[string]bool{"success": true})
+
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+}
+
+func handleModules(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPost:
+		var req struct {
+			ProjectPath string `json:"project_path"`
+			Name        string `json:"name"`
+			RelPath     string `json:"rel_path"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil || strings.TrimSpace(req.ProjectPath) == "" || strings.TrimSpace(req.Name) == "" {
+			errorResponse(w, http.StatusBadRequest, "Invalid project path or module name")
+			return
+		}
+
+		mod, err := core.AddModule(req.ProjectPath, req.Name, req.RelPath)
+		if err != nil {
+			errorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		jsonResponse(w, http.StatusOK, mod)
+
+	case http.MethodDelete:
+		var req struct {
+			ProjectPath string `json:"project_path"`
+			ModulePath  string `json:"module_path"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil || strings.TrimSpace(req.ProjectPath) == "" || strings.TrimSpace(req.ModulePath) == "" {
+			errorResponse(w, http.StatusBadRequest, "Invalid project path or module path")
+			return
+		}
+
+		if err := core.RemoveModule(req.ProjectPath, req.ModulePath); err != nil {
 			errorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -262,8 +304,7 @@ func handleEnv(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Ensure registered in catalog
-		_, _ = core.RegisterProject(req.Path)
+		core.TouchProjectAndModule(req.Path)
 
 		jsonResponse(w, http.StatusOK, map[string]bool{"success": true})
 
@@ -282,6 +323,8 @@ func handleEnv(w http.ResponseWriter, r *http.Request) {
 			errorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
+
+		core.TouchProjectAndModule(req.Path)
 
 		jsonResponse(w, http.StatusOK, map[string]bool{"success": true})
 
@@ -329,7 +372,7 @@ func handleImport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, _ = core.RegisterProject(req.Path)
+	core.TouchProjectAndModule(req.Path)
 
 	jsonResponse(w, http.StatusOK, map[string]interface{}{
 		"success": true,

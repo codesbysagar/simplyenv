@@ -247,6 +247,15 @@ func runList(args []string) {
 
 	configPath, err := core.FindConfig(targetDir)
 	if err != nil {
+		modules := core.DiscoverModules(targetDir)
+		if len(modules) > 0 {
+			fmt.Printf("No root config in %s, but found %d microservice module(s):\n\n", targetDir, len(modules))
+			for _, m := range modules {
+				fmt.Printf("  • %-20s (%s) — %d vars\n", m.Name, m.RelPath, m.VarCount)
+			}
+			fmt.Println("\nRun 'simplyenv list <module-path>' or 'cd <module-path>' to inspect.")
+			return
+		}
 		fmt.Println("No .simplyenv or .envrc found for this directory.")
 		return
 	}

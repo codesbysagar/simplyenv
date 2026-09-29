@@ -31,8 +31,8 @@
 
       <div class="sidebar-section">
         <div class="section-header">
-          <span>PROJECTS</span>
-          <button id="addProjectBtn" class="btn-icon" title="Track New Directory">
+          <span>PROJECTS &amp; MODULES</span>
+          <button id="addProjectBtn" class="btn-icon" title="Track New Project">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -61,14 +61,31 @@
       <header class="topbar">
         <div class="topbar-left">
           <div class="directory-breadcrumb">
-            <span class="folder-icon">
+            <span class="folder-icon" id="topbarFolderIcon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
               </svg>
             </span>
             <div class="directory-meta">
-              <h1 id="currentProjectName">Select a directory</h1>
-              <span id="currentProjectPath" class="current-path">No active directory</span>
+              <div class="breadcrumb-trail">
+                <button type="button" class="breadcrumb-item-btn" id="breadcrumbProjectBtn" title="View Project Overview">
+                  <span id="breadcrumbProjectName">Select Project</span>
+                </button>
+                <span class="breadcrumb-separator" id="breadcrumbSep">/</span>
+                <div class="module-dropdown-wrapper" id="moduleDropdownWrapper">
+                  <button type="button" class="module-select-trigger" id="moduleSelectTrigger" title="Switch Microservice Module">
+                    <span class="module-trigger-icon" id="moduleTriggerIcon">📦</span>
+                    <span id="breadcrumbModuleName">Module</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  <div class="module-dropdown-menu hidden" id="moduleDropdownMenu">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+              <span id="currentPathDisplay" class="current-path">No active directory</span>
             </div>
           </div>
         </div>
@@ -108,6 +125,16 @@
             <span>Add Variable</span>
           </button>
 
+          <button id="addModuleTopBtn" class="btn btn-secondary" title="Add Microservice Module">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span>+ Module</span>
+          </button>
+
           <button id="openTourBtn" class="btn btn-secondary btn-sm" title="Quick Getting Started Guide">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"></circle>
@@ -138,51 +165,107 @@
 
       <!-- Content Area -->
       <section class="content-body">
-        <div class="stats-bar">
-          <div class="stats-info">
-            <span id="varCountBadge" class="badge">0 variables</span>
-            <span id="configFileBadge" class="badge badge-outline">.simplyenv</span>
+        <!-- View 1: Project Overview (Microservices & Modules Grid) -->
+        <div id="projectOverviewView" class="project-overview-container hidden">
+          <div class="project-hero-card">
+            <div class="project-hero-main">
+              <div class="project-hero-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <div class="project-hero-info">
+                <h2 id="overviewProjectName" class="project-hero-title">Project Name</h2>
+                <span id="overviewProjectPath" class="project-hero-path">/path/to/project</span>
+              </div>
+            </div>
+            <div class="project-hero-stats">
+              <div class="stat-pill">
+                <span class="stat-pill-num" id="overviewModuleCount">0</span>
+                <span class="stat-pill-label">Modules</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-pill-num" id="overviewTotalVars">0</span>
+                <span class="stat-pill-label">Total Vars</span>
+              </div>
+              <button id="overviewAddModuleBtn" class="btn btn-primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Add Module</span>
+              </button>
+            </div>
           </div>
-          <div class="view-controls">
-            <button id="toggleMaskAllBtn" class="btn-ghost" title="Toggle Secret Visibility">
-              <svg id="maskEyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
-              </svg>
-              <span id="maskToggleText">Reveal Secrets</span>
-            </button>
+
+          <div class="modules-section-header">
+            <div class="section-title-wrap">
+              <h3>MICROSERVICES &amp; MODULES</h3>
+              <span class="modules-section-hint">Each microservice maintains its own .simplyenv environment file</span>
+            </div>
+          </div>
+
+          <div class="modules-grid" id="modulesGrid">
+            <!-- Rendered by JS -->
           </div>
         </div>
 
-        <!-- Environment Table -->
-        <div class="table-container">
-          <table class="env-table">
-            <thead>
-              <tr>
-                <th style="width: 32%;">VARIABLE KEY</th>
-                <th style="width: 50%;">VALUE</th>
-                <th style="width: 18%; text-align: right;">ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody id="envTableBody">
-              <!-- Rendered by JS -->
-            </tbody>
-          </table>
-
-          <div id="emptyState" class="empty-state">
-            <div class="empty-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
-                <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
-                <line x1="6" y1="6" x2="6.01" y2="6"></line>
-                <line x1="6" y1="18" x2="6.01" y2="18"></line>
-              </svg>
+        <!-- View 2: Module Environment Table View -->
+        <div id="moduleEnvView" class="module-env-container">
+          <div class="stats-bar">
+            <div class="stats-info">
+              <button type="button" id="backToOverviewBtn" class="btn-back-overview" title="Back to Project Overview">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span id="backProjectName">Overview</span>
+              </button>
+              <span id="activeModuleBadge" class="badge badge-module">📦 microservice-A</span>
+              <span id="varCountBadge" class="badge">0 variables</span>
+              <span id="configFileBadge" class="badge badge-outline">.simplyenv</span>
             </div>
-            <h3>No Environment Variables Found</h3>
-            <p>Add environment variables for this directory, or import an existing .env file.</p>
-            <div class="empty-actions">
-              <button id="emptyAddBtn" class="btn btn-primary">Add Variable</button>
-              <button id="emptyImportBtn" class="btn btn-secondary">Import .env</button>
+            <div class="view-controls">
+              <button id="toggleMaskAllBtn" class="btn-ghost" title="Toggle Secret Visibility">
+                <svg id="maskEyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span id="maskToggleText">Reveal Secrets</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Environment Table -->
+          <div class="table-container">
+            <table class="env-table">
+              <thead>
+                <tr>
+                  <th style="width: 32%;">VARIABLE KEY</th>
+                  <th style="width: 50%;">VALUE</th>
+                  <th style="width: 18%; text-align: right;">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody id="envTableBody">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+
+            <div id="emptyState" class="empty-state">
+              <div class="empty-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                  <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                  <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                  <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                </svg>
+              </div>
+              <h3 id="emptyStateTitle">No Environment Variables Found</h3>
+              <p id="emptyStateDesc">Add environment variables for this microservice module, or bulk import from .env.</p>
+              <div class="empty-actions">
+                <button id="emptyAddBtn" class="btn btn-primary">Add Variable</button>
+                <button id="emptyImportBtn" class="btn btn-secondary">Import .env</button>
+              </div>
             </div>
           </div>
         </div>
@@ -198,6 +281,10 @@
         <button class="modal-close-btn" data-close="varModal">&times;</button>
       </div>
       <form id="varForm">
+        <div class="form-group">
+          <label>TARGET MODULE</label>
+          <div class="module-target-pill" id="varModalModulePill">microservice-A</div>
+        </div>
         <div class="form-group">
           <label for="varKeyInput">VARIABLE NAME (KEY)</label>
           <input type="text" id="varKeyInput" required placeholder="e.g. DATABASE_URL or API_KEY" pattern="[A-Za-z0-9_]+" title="Alphanumeric and underscores only">
@@ -216,25 +303,69 @@
     </div>
   </div>
 
+  <!-- Modal: Add Microservice / Module -->
+  <div id="moduleModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Add Microservice Module</h3>
+        <button class="modal-close-btn" data-close="moduleModal">&times;</button>
+      </div>
+      <form id="moduleForm">
+        <div class="form-group">
+          <label>PARENT PROJECT</label>
+          <div class="project-tag-display" id="moduleModalProjectName">Project</div>
+        </div>
+        <div class="form-group">
+          <label for="moduleNameInput">MODULE / SERVICE NAME</label>
+          <input type="text" id="moduleNameInput" required placeholder="e.g. microservice-A, auth-service, api">
+        </div>
+        <div class="form-group">
+          <label for="moduleRelPathInput">SUBFOLDER DIRECTORY</label>
+          <input type="text" id="moduleRelPathInput" placeholder="e.g. microservice-A or services/auth">
+          <small class="form-hint">Directory relative to project root. Defaults to module name.</small>
+        </div>
+        <div class="form-group">
+          <label>QUICK PRESETS</label>
+          <div class="preset-chips">
+            <button type="button" class="preset-chip" data-preset="microservice-A">microservice-A</button>
+            <button type="button" class="preset-chip" data-preset="microservice-B">microservice-B</button>
+            <button type="button" class="preset-chip" data-preset="auth-service">auth-service</button>
+            <button type="button" class="preset-chip" data-preset="api-gateway">api-gateway</button>
+            <button type="button" class="preset-chip" data-preset="frontend">frontend</button>
+            <button type="button" class="preset-chip" data-preset="worker">worker</button>
+          </div>
+        </div>
+        <div class="path-preview-box">
+          <span class="preview-label">TARGET PATH:</span>
+          <code id="modulePathPreview">/path/to/project/microservice-A/.simplyenv</code>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="moduleModal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveModuleSubmitBtn">Create Module</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Modal: Add Directory / Track Project -->
   <div id="projectModal" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>Track Project Directory</h3>
+        <h3>Track Project</h3>
         <button class="modal-close-btn" data-close="projectModal">&times;</button>
       </div>
       <form id="projectForm">
         <div class="form-group">
-          <label for="projectPathInput">DIRECTORY PATH</label>
+          <label for="projectPathInput">PROJECT ROOT DIRECTORY</label>
           <div class="input-with-button">
             <input type="text" id="projectPathInput" required placeholder="/absolute/path/to/project">
             <button type="button" id="useCwdBtn" class="btn btn-secondary">Current Directory</button>
           </div>
-          <small class="form-hint">simplyenv will create a .simplyenv configuration in this directory if one does not exist.</small>
+          <small class="form-hint">simplyenv will scan for microservices (subdirectories with .simplyenv) and track the project.</small>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-close="projectModal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Track Directory</button>
+          <button type="submit" class="btn btn-primary">Track Project</button>
         </div>
       </form>
     </div>
