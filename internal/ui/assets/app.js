@@ -1321,7 +1321,28 @@ document.addEventListener('DOMContentLoaded', () => {
     openTourBtn.onclick = () => openTourModal(0);
   }
 
-  // Keyboard shortcut: Ctrl+F / Cmd+F to focus search filter
+  // Sidebar Collapse / Expand Toggle
+  const appLayoutEl = document.querySelector('.app-layout');
+  const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+
+  function toggleSidebar(forceState) {
+    if (!appLayoutEl) return;
+    const isCurrentlyCollapsed = appLayoutEl.classList.contains('sidebar-collapsed');
+    const newState = typeof forceState === 'boolean' ? forceState : !isCurrentlyCollapsed;
+    appLayoutEl.classList.toggle('sidebar-collapsed', newState);
+    localStorage.setItem('simplyenv_sidebar_collapsed', newState ? 'true' : 'false');
+  }
+
+  if (sidebarToggleBtn) {
+    sidebarToggleBtn.onclick = () => toggleSidebar();
+  }
+
+  // Restore sidebar state
+  if (localStorage.getItem('simplyenv_sidebar_collapsed') === 'true') {
+    appLayoutEl?.classList.add('sidebar-collapsed');
+  }
+
+  // Keyboard shortcut: Ctrl+F / Cmd+F to focus search filter, Ctrl+B / Cmd+B for sidebar
   window.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
       if (currentView === 'module') {
@@ -1329,6 +1350,9 @@ document.addEventListener('DOMContentLoaded', () => {
         searchEnvInput.focus();
         searchEnvInput.select();
       }
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+      e.preventDefault();
+      toggleSidebar();
     }
   });
 
