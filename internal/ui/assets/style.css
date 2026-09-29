@@ -22,15 +22,15 @@
   --text-muted: #64748b;
   --text-dim: #94a3b8;
 
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
-  --primary-light: #eef2ff;
-  --primary-glow: rgba(79, 70, 229, 0.12);
+  --primary: #00a862;
+  --primary-hover: #008e52;
+  --primary-light: #e6f7ef;
+  --primary-glow: rgba(0, 168, 98, 0.18);
 
   --accent-cyan: #0284c7;
   --accent-cyan-light: #e0f2fe;
-  --accent-emerald: #059669;
-  --accent-emerald-light: #d1fae5;
+  --accent-emerald: #00a862;
+  --accent-emerald-light: #e6f7ef;
   --accent-rose: #e11d48;
   --accent-rose-light: #ffe4e6;
   --accent-amber: #d97706;
@@ -66,15 +66,15 @@
   --text-muted: #94a3b8;
   --text-dim: #64748b;
 
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --primary-light: rgba(99, 102, 241, 0.15);
-  --primary-glow: rgba(99, 102, 241, 0.25);
+  --primary: #00d27d;
+  --primary-hover: #00b86c;
+  --primary-light: rgba(0, 210, 125, 0.15);
+  --primary-glow: rgba(0, 210, 125, 0.28);
 
   --accent-cyan: #38bdf8;
   --accent-cyan-light: rgba(56, 189, 248, 0.12);
-  --accent-emerald: #10b981;
-  --accent-emerald-light: rgba(16, 185, 129, 0.12);
+  --accent-emerald: #00d27d;
+  --accent-emerald-light: rgba(0, 210, 125, 0.15);
   --accent-rose: #f43f5e;
   --accent-rose-light: rgba(244, 63, 94, 0.12);
   --accent-amber: #f59e0b;
@@ -257,7 +257,7 @@ body {
 .project-icon {
   width: 15px;
   height: 15px;
-  color: var(--accent-cyan);
+  color: var(--primary);
   flex-shrink: 0;
 }
 
@@ -502,8 +502,8 @@ body {
   width: 34px;
   height: 34px;
   border-radius: var(--radius-sm);
-  background-color: var(--accent-cyan-light);
-  color: var(--accent-cyan);
+  background-color: var(--primary-light);
+  color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -709,8 +709,8 @@ body {
 
 .badge-outline {
   font-family: var(--font-mono);
-  color: var(--accent-cyan);
-  background: var(--accent-cyan-light);
+  color: var(--primary);
+  background: var(--primary-light);
   border-color: transparent;
 }
 
@@ -847,6 +847,11 @@ body {
   background-color: var(--primary);
   color: #ffffff;
   box-shadow: 0 1px 2px var(--primary-glow);
+}
+
+[data-theme="dark"] .btn-primary {
+  color: #03150d;
+  font-weight: 700;
 }
 
 .btn-primary:hover {
